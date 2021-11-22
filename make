@@ -1,3 +1,4 @@
 #!/bin/bash
+yacc -d -o yacc.c pl0.y
 lex -o p.c pl0.l 
-cc -o p p.c 
+cc p.c yacc.c -o p 
