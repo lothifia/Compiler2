@@ -15,6 +15,9 @@ dev [/]
 %%
 [\n] {++line; return END;}
 [+] {printf("get +\n"); return Plus;}
+[-] {printf("get -\n"); return Dec;}
+[*] {printf("get *\n"); return Mul;}
+[/] {printf("get /\n"); return Div;}
 {num} {
     printf("get a num %d\n", atoi(yytext));
     yylval.NUM = atoi(yytext);

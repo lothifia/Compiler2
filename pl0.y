@@ -1,5 +1,16 @@
 %{
+    #define al 10
+
     #include<stdio.h>
+    #include<stdlib.h>
+    #include<malloc.h>
+    #include<memory.h>
+    #include<string.h>
+    FILE* fin;
+    FILE* foutput;
+    FILE* ftable;
+    char fname[al];
+
 
 %}
 %union{
@@ -35,6 +46,28 @@ yyerror(const char* s){
 }
 
 int main(){
+    printf("Input file");
+    scanf("%s", fname);
+    if((fin = fopen(fname, "r")) == NULL)
+    {
+        printf("open file error!\n");
+        exit(1);
+    }
+    if ((foutput = fopen("foutput.txt", "w")) == NULL)
+    {
+		printf("Can't open the output file!\n");
+		exit(1);
+	}
+	if ((ftable = fopen("ftable.txt", "w")) == NULL)
+	{
+		printf("Can't open ftable.txt file!\n");
+		exit(1);
+	}
+    redirectInput(fin);
+
     yyparse();
+    fclose(fin);
+    fclose(ftable);
+    fclose(foutput);
     return 0;
 }

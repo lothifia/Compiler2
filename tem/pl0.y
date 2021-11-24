@@ -16,12 +16,18 @@
 
 %%
 procstart:
-|
-block procstart END{printf("%d", $1);}
+| 
+procstart block END{printf("%d\n", $2);}
 ;
 
 block:
 num Plus num{$$ = $1 + $3;}
+|
+num Div num{$$ = $1 / $3;}
+|
+num Dec num{$$ = $1 - $3;}
+|
+num Mul num{$$ = $1 * $3;}
 ;
 %%
 yyerror(const char* s){

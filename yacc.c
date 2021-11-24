@@ -68,10 +68,25 @@
 /* First part of user prologue.  */
 #line 1 "pl0.y"
 
+    #define al 10
+
     #include<stdio.h>
+    #include<stdlib.h>
+    #include<malloc.h>
+    #include<memory.h>
+    #include<string.h>
+    FILE* fin;
+    FILE* foutput;
+    FILE* ftable;
+    char fname[al];
 
 
-#line 75 "yacc.c"
+
+
+
+
+
+#line 90 "yacc.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -141,13 +156,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 5 "pl0.y"
+#line 20 "pl0.y"
 
     int NUM;
     char* VAR;
     char* OP;
 
-#line 151 "yacc.c"
+#line 166 "yacc.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -523,7 +538,7 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    18,    18,    20,    24,    26,    28,    30
+       0,    33,    33,    35,    39,    41,    43,    45
 };
 #endif
 
@@ -1313,37 +1328,37 @@ yyreduce:
   switch (yyn)
     {
   case 3:
-#line 20 "pl0.y"
+#line 35 "pl0.y"
                    {printf("%d\n", (yyvsp[-1].NUM));}
-#line 1319 "yacc.c"
+#line 1334 "yacc.c"
     break;
 
   case 4:
-#line 24 "pl0.y"
+#line 39 "pl0.y"
             {(yyval.NUM) = (yyvsp[-2].NUM) + (yyvsp[0].NUM);}
-#line 1325 "yacc.c"
+#line 1340 "yacc.c"
     break;
 
   case 5:
-#line 26 "pl0.y"
+#line 41 "pl0.y"
            {(yyval.NUM) = (yyvsp[-2].NUM) / (yyvsp[0].NUM);}
-#line 1331 "yacc.c"
+#line 1346 "yacc.c"
     break;
 
   case 6:
-#line 28 "pl0.y"
+#line 43 "pl0.y"
            {(yyval.NUM) = (yyvsp[-2].NUM) - (yyvsp[0].NUM);}
-#line 1337 "yacc.c"
+#line 1352 "yacc.c"
     break;
 
   case 7:
-#line 30 "pl0.y"
+#line 45 "pl0.y"
            {(yyval.NUM) = (yyvsp[-2].NUM) * (yyvsp[0].NUM);}
-#line 1343 "yacc.c"
+#line 1358 "yacc.c"
     break;
 
 
-#line 1347 "yacc.c"
+#line 1362 "yacc.c"
 
       default: break;
     }
@@ -1575,13 +1590,35 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 32 "pl0.y"
+#line 47 "pl0.y"
 
 yyerror(const char* s){
     printf("error!:%s\n", s);
 }
 
 int main(){
+    printf("Input file");
+    scanf("%s", fname);
+    if((fin = fopen(fname, "r")) == NULL)
+    {
+        printf("open file error!\n");
+        exit(1);
+    }
+    if ((foutput = fopen("foutput.txt", "w")) == NULL)
+    {
+		printf("Can't open the output file!\n");
+		exit(1);
+	}
+	if ((ftable = fopen("ftable.txt", "w")) == NULL)
+	{
+		printf("Can't open ftable.txt file!\n");
+		exit(1);
+	}
+    redirectInput(fin);
+
     yyparse();
+    fclose(fin);
+    fclose(ftable);
+    fclose(foutput);
     return 0;
 }

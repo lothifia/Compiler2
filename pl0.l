@@ -1,8 +1,9 @@
 %{
-    #include "yacc.h"
     #include<stdio.h>
+    #include "yacc.h"
     int line;
-
+    void yyerror(char*);
+    int yywrap(void);
 %}
 
 num [0-9]+
@@ -25,6 +26,17 @@ dev [/]
     }
 {char} {printf("get a char %s\n", yytext);}
 %%
+
+void redirectInput(FILE *input){
+    yyin = input;
+}
+int  yygetchar(void){
+    int ret;
+    ret = getc(yyin);
+    printf("%c", ret);
+    return ret;
+}
+
 
 int yywrap(void)
 {

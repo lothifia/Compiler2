@@ -444,12 +444,13 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "pl0.l"
 #line 2 "pl0.l"
-    #include "yacc.h"
     #include<stdio.h>
+    #include "yacc.h"
     int line;
-
-#line 452 "p.c"
+    void yyerror(char*);
+    int yywrap(void);
 #line 453 "p.c"
+#line 454 "p.c"
 
 #define INITIAL 0
 
@@ -666,9 +667,9 @@ YY_DECL
 		}
 
 	{
-#line 15 "pl0.l"
+#line 16 "pl0.l"
 
-#line 672 "p.c"
+#line 673 "p.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -728,32 +729,32 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 16 "pl0.l"
+#line 17 "pl0.l"
 {++line; return END;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 17 "pl0.l"
+#line 18 "pl0.l"
 {printf("get +\n"); return Plus;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 18 "pl0.l"
+#line 19 "pl0.l"
 {printf("get -\n"); return Dec;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 19 "pl0.l"
+#line 20 "pl0.l"
 {printf("get *\n"); return Mul;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 20 "pl0.l"
+#line 21 "pl0.l"
 {printf("get /\n"); return Div;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 21 "pl0.l"
+#line 22 "pl0.l"
 {
     printf("get a num %d\n", atoi(yytext));
     yylval.NUM = atoi(yytext);
@@ -762,15 +763,15 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 26 "pl0.l"
+#line 27 "pl0.l"
 {printf("get a char %s\n", yytext);}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 27 "pl0.l"
+#line 28 "pl0.l"
 ECHO;
 	YY_BREAK
-#line 774 "p.c"
+#line 775 "p.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1775,7 +1776,18 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 27 "pl0.l"
+#line 28 "pl0.l"
+
+
+void redirectInput(FILE *input){
+    yyin = input;
+}
+int  yygetchar(void){
+    int ret;
+    ret = getc(yyin);
+    printf("%c", ret);
+    return ret;
+}
 
 
 int yywrap(void)
