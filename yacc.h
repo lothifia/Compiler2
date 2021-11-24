@@ -50,34 +50,50 @@ extern int yydebug;
   enum yytokentype
   {
     num = 258,
-    var = 259,
-    Plus = 260,
-    Div = 261,
-    Dec = 262,
-    Mul = 263,
-    END = 264
+    INT = 259,
+    var = 260,
+    CHAR = 261,
+    Plus = 262,
+    Div = 263,
+    Dec = 264,
+    Mul = 265,
+    Eql = 266,
+    END = 267,
+    LB = 268,
+    RB = 269,
+    MAIN = 270,
+    SEMI = 271,
+    COMMA = 272
   };
 #endif
 /* Tokens.  */
 #define num 258
-#define var 259
-#define Plus 260
-#define Div 261
-#define Dec 262
-#define Mul 263
-#define END 264
+#define INT 259
+#define var 260
+#define CHAR 261
+#define Plus 262
+#define Div 263
+#define Dec 264
+#define Mul 265
+#define Eql 266
+#define END 267
+#define LB 268
+#define RB 269
+#define MAIN 270
+#define SEMI 271
+#define COMMA 272
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 20 "pl0.y"
+#line 67 "pl0.y"
 
     int NUM;
     char* VAR;
     char* OP;
 
-#line 81 "yacc.h"
+#line 97 "yacc.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

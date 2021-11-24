@@ -69,6 +69,10 @@
 #line 1 "pl0.y"
 
     #define al 10
+    #define cxmax 2000
+    #define txmax 1000
+    #define amax 2048
+
 
     #include<stdio.h>
     #include<stdlib.h>
@@ -79,14 +83,57 @@
     FILE* foutput;
     FILE* ftable;
     char fname[al];
+    
+    int tx;
+    int cx;
+    int px;
+    int lev;
+    int proctable[3];
+    char id[al];
+    extern int line;
+    int err;
+    int c_num;
+
+    enum fct 
+    {
+        lit,     opr,     lod, 
+        sto,     cal,     ini, 
+        jmp,     jpc,     
+    };
+    struct instruction
+    {
+        enum fct f;   /* 虚拟机代码指令 */
+        int l;        /* 引用层与声明层的层次差 */
+        int a;        /* 根据f的不同而不同 */
+    };
+    struct instruction code[cxmax]; /* 存放虚拟机代码的数组 */
+    enum object 
+    {
+        constant, 
+        variable, 
+        procedure,
+    };
+
+    /* 符号表结构 */
+    struct tablestruct
+    {
+    char name[al];      /* 名字 */
+    enum object kind;   /* 类型：const，var或procedure */
+    int val;            /* 数值，仅const使用 */
+        int level;          /* 所处层，仅const不使用 */ 
+        int adr;            /* 地址，仅const不使用 */
+        int size;           /* 需要分配的数据区空间, 仅procedure使用 */
+    };
+    struct tablestruct table[txmax]; /* 符号表 */
 
 
+    void init();
+    void enter(enum object k);
+    void setdx(int n);
+    void gen(enum fct x, int y, int z);
 
 
-
-
-
-#line 90 "yacc.c"
+#line 137 "yacc.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -135,34 +182,50 @@ extern int yydebug;
   enum yytokentype
   {
     num = 258,
-    var = 259,
-    Plus = 260,
-    Div = 261,
-    Dec = 262,
-    Mul = 263,
-    END = 264
+    INT = 259,
+    var = 260,
+    CHAR = 261,
+    Plus = 262,
+    Div = 263,
+    Dec = 264,
+    Mul = 265,
+    Eql = 266,
+    END = 267,
+    LB = 268,
+    RB = 269,
+    MAIN = 270,
+    SEMI = 271,
+    COMMA = 272
   };
 #endif
 /* Tokens.  */
 #define num 258
-#define var 259
-#define Plus 260
-#define Div 261
-#define Dec 262
-#define Mul 263
-#define END 264
+#define INT 259
+#define var 260
+#define CHAR 261
+#define Plus 262
+#define Div 263
+#define Dec 264
+#define Mul 265
+#define Eql 266
+#define END 267
+#define LB 268
+#define RB 269
+#define MAIN 270
+#define SEMI 271
+#define COMMA 272
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 20 "pl0.y"
+#line 67 "pl0.y"
 
     int NUM;
     char* VAR;
     char* OP;
 
-#line 166 "yacc.c"
+#line 229 "yacc.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -479,21 +542,21 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  2
+#define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   10
+#define YYLAST   24
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  10
+#define YYNTOKENS  18
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  3
+#define YYNNTS  13
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  7
+#define YYNRULES  22
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  14
+#define YYNSTATES  35
 
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   264
+#define YYMAXUTOK   272
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -531,14 +594,17 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9
+       5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
+      15,    16,    17
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_int8 yyrline[] =
+static const yytype_uint8 yyrline[] =
 {
-       0,    33,    33,    35,    39,    41,    43,    45
+       0,    82,    82,    84,    88,    88,    98,    98,    99,   103,
+     116,   121,   125,   129,   133,   134,   139,   148,   155,   157,
+     159,   161,   165
 };
 #endif
 
@@ -547,8 +613,11 @@ static const yytype_int8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "num", "var", "Plus", "Div", "Dec",
-  "Mul", "END", "$accept", "procstart", "block", YY_NULLPTR
+  "$end", "error", "$undefined", "num", "INT", "var", "CHAR", "Plus",
+  "Div", "Dec", "Mul", "Eql", "END", "LB", "RB", "MAIN", "SEMI", "COMMA",
+  "$accept", "procstart", "block", "$@1", "statement", "$@2",
+  "declaration_list", "Vardecl", "VarInit", "Vardef", "procdecls",
+  "calcblock", "get_table_addr", YY_NULLPTR
 };
 #endif
 
@@ -557,16 +626,17 @@ static const char *const yytname[] =
    (internal) symbol number NUM (which must be that of a token).  */
 static const yytype_int16 yytoknum[] =
 {
-       0,   256,   257,   258,   259,   260,   261,   262,   263,   264
+       0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
+     265,   266,   267,   268,   269,   270,   271,   272
 };
 # endif
 
-#define YYPACT_NINF (-6)
+#define YYPACT_NINF (-15)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
 
-#define YYTABLE_NINF (-1)
+#define YYTABLE_NINF (-23)
 
 #define yytable_value_is_error(Yyn) \
   0
@@ -575,8 +645,10 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -6,     4,    -6,    -5,    -4,     3,     5,     6,     7,    -6,
-      -6,    -6,    -6,    -6
+      -5,    -4,    11,   -15,   -15,    -2,     1,   -15,    10,     2,
+      -6,   -15,   -15,     9,     9,   -15,    12,    13,    14,    16,
+       4,   -15,     5,     6,     8,   -15,   -15,   -15,   -15,   -15,
+     -15,   -15,     9,   -15,   -15
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -584,20 +656,24 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     1,     0,     0,     0,     0,     0,     0,     3,
-       4,     5,     6,     7
+       2,     0,     0,     4,     1,     0,    10,     3,     8,    13,
+       0,     5,     6,     0,     0,    17,     0,     0,     0,     0,
+       0,    16,     0,    14,     0,     9,    18,    19,    20,    21,
+       7,    11,     0,    12,    15
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -6,    -6,    -6
+     -15,   -15,   -15,   -15,   -15,   -15,   -15,   -15,   -14,   -15,
+     -15,   -15,   -15
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     1,     4
+      -1,     2,     5,     6,    11,    20,     8,    15,    22,    23,
+      25,    12,     9
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -605,34 +681,42 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       5,     6,     7,     8,     2,     9,    10,     3,    11,    12,
-      13
+      24,    16,    17,    18,    19,   -22,    13,   -22,    14,     3,
+       1,     4,     7,    10,    21,    26,    27,    28,    34,    29,
+      30,    31,     0,    32,    33
 };
 
 static const yytype_int8 yycheck[] =
 {
-       5,     6,     7,     8,     0,     9,     3,     3,     3,     3,
-       3
+      14,     7,     8,     9,    10,     4,     4,     6,     6,    13,
+      15,     0,    14,     3,     5,     3,     3,     3,    32,     3,
+      16,    16,    -1,    17,    16
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    11,     0,     3,    12,     5,     6,     7,     8,     9,
-       3,     3,     3,     3
+       0,    15,    19,    13,     0,    20,    21,    14,    24,    30,
+       3,    22,    29,     4,     6,    25,     7,     8,     9,    10,
+      23,     5,    26,    27,    26,    28,     3,     3,     3,     3,
+      16,    16,    17,    16,    26
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    10,    11,    11,    12,    12,    12,    12
+       0,    18,    19,    19,    21,    20,    23,    22,    22,    24,
+      24,    25,    25,    25,    26,    26,    27,    28,    29,    29,
+      29,    29,    30
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     0,     3,     3,     3,     3,     3
+       0,     2,     0,     4,     0,     3,     0,     3,     0,     3,
+       0,     3,     3,     0,     1,     3,     1,     0,     3,     3,
+       3,     3,     0
 };
 
 
@@ -1327,38 +1411,115 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 3:
-#line 35 "pl0.y"
-                   {printf("%d\n", (yyvsp[-1].NUM));}
-#line 1334 "yacc.c"
-    break;
-
   case 4:
-#line 39 "pl0.y"
-            {(yyval.NUM) = (yyvsp[-2].NUM) + (yyvsp[0].NUM);}
-#line 1340 "yacc.c"
-    break;
-
-  case 5:
-#line 41 "pl0.y"
-           {(yyval.NUM) = (yyvsp[-2].NUM) / (yyvsp[0].NUM);}
-#line 1346 "yacc.c"
+#line 88 "pl0.y"
+    {
+        
+        table[tx].adr = cx;
+        gen(jmp, 0, 0);
+    }
+#line 1422 "yacc.c"
     break;
 
   case 6:
-#line 43 "pl0.y"
-           {(yyval.NUM) = (yyvsp[-2].NUM) - (yyvsp[0].NUM);}
-#line 1352 "yacc.c"
+#line 98 "pl0.y"
+              {printf("%d \n", (yyvsp[0].NUM));}
+#line 1428 "yacc.c"
     break;
 
-  case 7:
-#line 45 "pl0.y"
-           {(yyval.NUM) = (yyvsp[-2].NUM) * (yyvsp[0].NUM);}
-#line 1358 "yacc.c"
+  case 9:
+#line 107 "pl0.y"
+    {
+        
+        setdx((yyvsp[-1].NUM));
+        printf("%d var,\n ", (yyvsp[-1].NUM));
+        code[(yyvsp[-2].NUM)].a = cx;
+        table[(yyvsp[-1].NUM)].adr = cx;
+        table[(yyvsp[-1].NUM)].size = (yyvsp[-1].NUM) + 3;
+        gen(ini, 0, (yyvsp[-1].NUM) + 3);
+    }
+#line 1442 "yacc.c"
+    break;
+
+  case 11:
+#line 122 "pl0.y"
+    {
+        (yyval.NUM) = (yyvsp[-1].NUM);
+    }
+#line 1450 "yacc.c"
+    break;
+
+  case 12:
+#line 126 "pl0.y"
+    {
+        (yyval.NUM) = (yyvsp[-1].NUM);
+    }
+#line 1458 "yacc.c"
+    break;
+
+  case 13:
+#line 129 "pl0.y"
+      {(yyval.NUM) = 0;}
+#line 1464 "yacc.c"
+    break;
+
+  case 14:
+#line 133 "pl0.y"
+           { (yyval.NUM) = (yyvsp[0].NUM);}
+#line 1470 "yacc.c"
+    break;
+
+  case 15:
+#line 134 "pl0.y"
+                           {(yyval.NUM) = (yyvsp[-2].NUM) + (yyvsp[0].NUM);}
+#line 1476 "yacc.c"
+    break;
+
+  case 16:
+#line 140 "pl0.y"
+    {
+        
+        strcpy(id, (yyvsp[0].VAR));
+        enter(variable);
+        (yyval.NUM) = 1;
+    }
+#line 1487 "yacc.c"
+    break;
+
+  case 18:
+#line 155 "pl0.y"
+                {(yyval.NUM) = (yyvsp[-2].NUM) + (yyvsp[0].NUM);}
+#line 1493 "yacc.c"
+    break;
+
+  case 19:
+#line 157 "pl0.y"
+               {(yyval.NUM) = (yyvsp[-2].NUM) / (yyvsp[0].NUM);}
+#line 1499 "yacc.c"
+    break;
+
+  case 20:
+#line 159 "pl0.y"
+               {(yyval.NUM) = (yyvsp[-2].NUM) - (yyvsp[0].NUM);}
+#line 1505 "yacc.c"
+    break;
+
+  case 21:
+#line 161 "pl0.y"
+               {(yyval.NUM) = (yyvsp[-2].NUM) * (yyvsp[0].NUM);}
+#line 1511 "yacc.c"
+    break;
+
+  case 22:
+#line 165 "pl0.y"
+    {
+        (yyval.NUM) = tx;
+    }
+#line 1519 "yacc.c"
     break;
 
 
-#line 1362 "yacc.c"
+#line 1523 "yacc.c"
 
       default: break;
     }
@@ -1590,21 +1751,75 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 47 "pl0.y"
+#line 170 "pl0.y"
+
 
 yyerror(const char* s){
-    printf("error!:%s\n", s);
+    printf("error!:%s\n, located at %d line\n", s, line);
+}
+void init()
+{
+	tx = 0;
+	cx = 0;
+	px = 0;  
+  lev = 0;   
+  proctable[0] = 0;
+  c_num = 0;
+  err = 0;
+}
+
+void enter(enum object k)
+{
+	tx = tx + 1;
+	strcpy(table[tx].name, id);
+	table[tx].kind = k;
+	switch (k)
+	{
+		case constant:	/* 常量 */			
+			table[tx].val = num; /* 登记常数的值 */
+			break;
+		case variable:	/* 变量 */
+			table[tx].level = lev;	
+			break;
+		case procedure:	/* 过程 */
+			table[tx].level = lev;
+			break;
+	}
+}
+void setdx(int n)
+{
+    for(int i = 0; i <= n; i++){
+        table[tx - i + 1].adr = n - i + 3;
+    }
+}
+
+void gen(enum fct x, int y, int z)
+{
+	if (cx >= cxmax)
+	{
+		printf("Program is too long!\n");	/* 生成的虚拟机代码程序过长 */
+		exit(1);
+	}
+	if ( z >= amax)
+	{
+		printf("Displacement address is too big!\n");	/* 地址偏移越界 */
+		exit(1);
+	}
+	code[cx].f = x;
+	code[cx].l = y;
+	code[cx].a = z;
+	cx++;
 }
 
 int main(){
-    printf("Input file");
+    printf("Input file        ");
     scanf("%s", fname);
     if((fin = fopen(fname, "r")) == NULL)
     {
         printf("open file error!\n");
         exit(1);
     }
-    if ((foutput = fopen("foutput.txt", "w")) == NULL)
+    /* if ((foutput = fopen("foutput.txt", "w")) == NULL)
     {
 		printf("Can't open the output file!\n");
 		exit(1);
@@ -1614,11 +1829,14 @@ int main(){
 		printf("Can't open ftable.txt file!\n");
 		exit(1);
 	}
+    */
     redirectInput(fin);
+    init();
 
     yyparse();
     fclose(fin);
-    fclose(ftable);
+    /* fclose(ftable);
     fclose(foutput);
+    */
     return 0;
 }
