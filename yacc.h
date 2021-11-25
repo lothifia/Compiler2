@@ -74,7 +74,11 @@ extern int yydebug;
     CONST = 280,
     PROC = 281,
     IF = 282,
-    ELSE = 283
+    ELSE = 283,
+    READ = 284,
+    WRITE = 285,
+    FOR = 286,
+    WHILE = 287
   };
 #endif
 /* Tokens.  */
@@ -104,18 +108,22 @@ extern int yydebug;
 #define PROC 281
 #define IF 282
 #define ELSE 283
+#define READ 284
+#define WRITE 285
+#define FOR 286
+#define WHILE 287
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 69 "pl0.y"
+#line 72 "pl0.y"
 
     int NUM;
     char* VAR;
     char* OP;
 
-#line 119 "yacc.h"
+#line 127 "yacc.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -21,7 +21,10 @@ dev [/]
 "const" {return CONST;}
 "if" {return IF;}
 "else" {return ELSE;}
-
+"write" {return WRITE;}
+"read" {return READ;}
+"while" {return WHILE;}
+"for" {return FOR;}
 
 [(] {return LP;}
 [)] {return RP;}
@@ -33,11 +36,11 @@ dev [/]
 "<=" {return LEQ;}
 ">" {return GTR;}
 "<" {return LSS;}
-"=" {printf("get =\n"); return EQL;}
-"+" {printf("get +\n"); return Plus;}
-"-" {printf("get -\n"); return Minus;}
-"*" {printf("get *\n"); return Mul;}
-[/] {printf("get /\n"); return Div;}
+"=" { return EQL;}
+"+" { return Plus;}
+"-" {return Minus;}
+"*" { return Mul;}
+[/] { return Div;}
 [;] {return SEMI;}
 [,] {return COMMA;}
 {num} {

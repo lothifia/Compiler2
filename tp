@@ -1,6 +1,7 @@
 main{
 int adfpa, ooo;
-ooo = 12;
-if(1 > 2 ) adfpa = 78 * 12;
-
+for(ooo = 1; ooo < 5; ooo = ooo +1){
+	write ooo;
+}
+write ooo;
 }

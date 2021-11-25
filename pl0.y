@@ -3,6 +3,7 @@
     #define cxmax 2000
     #define txmax 1000
     #define amax 2048
+    #define stacksize 3000
 
 
     #include<stdio.h>
@@ -24,6 +25,8 @@
     extern int line;
     int err;
     int c_num;/* use to record const */
+    int fortable[cxmax][3];
+    int forx;
 
     enum fct 
     {
@@ -64,6 +67,8 @@
     void gen(enum fct x, int y, int z);
     void displaytable();
     void listall();
+    void interpret();
+    int base(int l, int* s, int b);
 
 %}
 %union{
@@ -75,7 +80,7 @@
 %token<NUM> num INT
 %token<VAR> var CHAR
 %token<OP> Plus Div Minus Mul EQL GEQ LEQ LSS GTR NEQ
-%token END LB RB LP RP MAIN SEMI COMMA CONST PROC IF ELSE 
+%token END LB RB LP RP MAIN SEMI COMMA CONST PROC IF ELSE READ WRITE FOR WHILE
 %type<NUM> calcblock get_table_addr get_code_addr declaration_list VarInit Vardecl Vardef 
 %type<NUM> block var_p 
 %type statement VarInit Vardef condition
@@ -96,6 +101,7 @@ block:
     declaration_list
     statements
     {
+        gen(opr, 0, 0);
         listall();
     }
     ;
@@ -169,16 +175,18 @@ statements :
     |
     ;
 statement:
-    calcblock {printf("%d \n", $1);} SEMI
-    |   asgnstm 
+       asgnstm SEMI
     |   callstm
     |   ifstm
     |   whilestm
     |   readstm
     |   writestm
+    |   forstm
     ;
+compstm: statement
+    | LB statements RB;
 asgnstm:
-    var_p EQL expression SEMI
+    var_p EQL expression
     {
         if($1 == 0){
             yyerror("Symbol not Exist\n");
@@ -192,23 +200,56 @@ asgnstm:
     ;
 callstm:
     ;
+forstm:
+    FOR LP 
+    asgnstm SEMI get_code_addr
+    condition get_code_addr
+    {
+        gen(jpc, 0, 0);
+    }
+    SEMI var_change RP 
+    compstm
+    {
+        gen(jmp, 0, $5);
+        printf("jpc = %d\n", $7);
+        code[$7].a = cx;
+    }
+    ;
 ifstm: IF LP condition RP get_code_addr
     {
         gen(jpc,0,0);
     }
-    statements
+    compstm
     {code[$5].a = cx;}
     ;
-whilestm:
+
+whilestm: WHILE LP get_code_addr condition RP get_code_addr
+    {
+        gen(jpc, 0, 0);
+    }
+     compstm 
+    {
+        gen(jmp, 0, $3);
+       code[$6].a = cx;
+    }
     ;
-readstm:
+readstm: READ var_p SEMI
+    {
+        gen(opr, 0, 16);
+        gen(sto, lev - table[$2].level, table[$2].adr);
+    }
     ;
-writestm:
+writestm:WRITE var_p SEMI
+    {
+        gen(lod, lev - table[$2].level,table[$2].adr);
+        gen(opr, 0, 14);   
+        gen(opr, 0, 15);
+    }
     ;
 
 condition: expression EQL expression
             {
-                gen(opr, 0, 7);
+                gen(opr, 0, 8);
             }
         |   expression NEQ expression
             {
@@ -230,6 +271,7 @@ condition: expression EQL expression
             {
                 gen(opr, 0, 11);
             }
+        |   expression
     ;
 
 expression: Plus term
@@ -265,8 +307,9 @@ factor: var_p
             else{
                 if(table[$1].kind == constant)
                 gen(lit, 0, table[$1].val);
-                else
+                else{
                     gen(lod, lev - table[$1].level, table[$1].adr);
+                }
             }
         }
     }
@@ -277,7 +320,7 @@ factor: var_p
     | LP expression RP
     ;
 
-/*calc test*/
+/*calc test
 calcblock:
     num Plus num{$$ = $1 + $3;}
     |
@@ -287,7 +330,7 @@ calcblock:
     |
     num Mul num{$$ = $1 * $3;}
     ;
-
+*/
 get_table_addr:
     {
         $$ = tx;
@@ -307,7 +350,8 @@ void init()
 {
 	tx = 0;
 	cx = 0;
-	px = 0;  
+	px = 0;
+    forx = 0;
   lev = 0;   
   proctable[0] = 0;
   c_num = 0;
@@ -417,6 +461,145 @@ void displaytable()
 		printf("\n");
 		/* fprintf(ftable, "\n"); */
 }
+void interpret()
+{
+	int p = 0; /* 指令指针 */
+	int b = 1; /* 指令基址 */
+	int t = 0; /* 栈顶指针 */
+	struct instruction i;	/* 存放当前指令 */
+	int s[stacksize];	/* 栈 */
+
+	printf("Start pl0\n");
+	/* fprintf(fresult,"Start pl0\n"); */
+	s[0] = 0; /* s[0]不用 */
+	s[1] = 0; /* 主程序的三个联系单元均置为0 */
+	s[2] = 0;
+	s[3] = 0;
+
+	do {
+	    i = code[p];	/* 读当前指令 */
+		p = p + 1;
+		switch (i.f)
+		{
+			case lit:	/* 将常量a的值取到栈顶 */
+				t = t + 1;
+				s[t] = i.a;				
+				break;
+			case opr:	/* 数学、逻辑运算 */
+				switch (i.a)
+				{
+					case 0:  /* 函数调用结束后返回 */
+                        printf("t: %d \n p: %d \nb: %d \n ******\n", t, p, b);
+						t = b - 1;
+						p = s[t + 3];
+						b = s[t + 2];
+                        printf("t: %d \n p: %d \nb: %d \n *******\n", t, p, b);
+						break;
+					case 1: /* 栈顶元素取反 */
+						s[t] = - s[t];
+						break;
+					case 2: /* 次栈顶项加上栈顶项，退两个栈元素，相加值进栈 */
+						t = t - 1;
+						s[t] = s[t] + s[t + 1];
+						break;
+					case 3:/* 次栈顶项减去栈顶项 */
+						t = t - 1;
+						s[t] = s[t] - s[t + 1];
+						break;
+					case 4:/* 次栈顶项乘以栈顶项 */
+						t = t - 1;
+						s[t] = s[t] * s[t + 1];
+						break;
+					case 5:/* 次栈顶项除以栈顶项 */
+						t = t - 1;
+						s[t] = s[t] / s[t + 1];
+						break;
+					case 6:/* 栈顶元素的奇偶判断 */
+						s[t] = s[t] % 2;
+						break;
+					case 8:/* 次栈顶项与栈顶项是否相等 */
+						t = t - 1;
+						s[t] = (s[t] == s[t + 1]);
+						break;
+					case 9:/* 次栈顶项与栈顶项是否不等 */
+						t = t - 1;
+						s[t] = (s[t] != s[t + 1]);
+						break;
+					case 10:/* 次栈顶项是否小于栈顶项 */
+						t = t - 1;
+						s[t] = (s[t] < s[t + 1]);
+						break;
+					case 11:/* 次栈顶项是否大于等于栈顶项 */
+						t = t - 1;
+						s[t] = (s[t] >= s[t + 1]);
+						break;
+					case 12:/* 次栈顶项是否大于栈顶项 */
+						t = t - 1;
+						s[t] = (s[t] > s[t + 1]);
+						break;
+					case 13: /* 次栈顶项是否小于等于栈顶项 */
+						t = t - 1;
+						s[t] = (s[t] <= s[t + 1]);
+						break;
+					case 14:/* 栈顶值输出 */
+						printf("%d", s[t]);
+						/* fprintf(fresult, "%d", s[t]); */
+						t = t - 1;
+						break;
+					case 15:/* 输出换行符 */
+						printf("\n");
+					    /* fprintf(fresult,"\n"); */
+						break;
+					case 16:/* 读入一个输入置于栈顶 */
+						t = t + 1;
+						printf("?");
+						/* fprintf(fresult, "?"); */
+						scanf("%d", &(s[t]));
+						/* fprintf(fresult, "%d\n", s[t]); */						
+						break;
+				}
+				break;
+			case lod:	/* 取相对当前过程的数据基地址为a的内存的值到栈顶 */
+				t = t + 1;
+				s[t] = s[base(i.l,s,b) + i.a];				
+				break;
+			case sto:	/* 栈顶的值存到相对当前过程的数据基地址为a的内存 */
+				s[base(i.l, s, b) + i.a] = s[t];
+				t = t - 1;
+				break;
+			case cal:	/* 调用子过程 */
+				s[t + 1] = base(i.l, s, b);	/* 将父过程基地址入栈，即建立静态链 */
+				s[t + 2] = b;	/* 将本过程基地址入栈，即建立动态链 */
+				s[t + 3] = p;	/* 将当前指令指针入栈，即保存返回地址 */
+				b = t + 1;	/* 改变基地址指针值为新过程的基地址 */
+				p = i.a;	/* 跳转 */
+				break;
+			case ini:	/* 在数据栈中为被调用的过程开辟a个单元的数据区 */
+				t = t + i.a;	
+				break;
+			case jmp:	/* 直接跳转 */
+				p = i.a;
+				break;
+			case jpc:	/* 条件跳转 */
+				if (s[t] == 0) 
+					p = i.a;
+				t = t - 1;
+				break;
+		}
+	} while (p != 0);
+	printf("End pl0\n");
+	/*fprintf(fresult,"End pl0\n");*/
+}
+int base(int l, int* s, int b)
+{
+    int bl;
+    bl = b;
+    while(l > 0){
+        bl = s[bl];
+        l--;
+    }
+    return bl;
+}
 
 int main(){
     printf("Input file        ");
@@ -441,6 +624,7 @@ int main(){
     init();
 
     yyparse();
+    interpret();
     fclose(fin);
     /* fclose(ftable);
     fclose(foutput);
