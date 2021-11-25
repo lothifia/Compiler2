@@ -178,7 +178,7 @@ statement:
     |   writestm
     ;
 asgnstm:
-    var_p EQL num SEMI
+    var_p EQL expression SEMI
     {
         if($1 == 0){
             yyerror("Symbol not Exist\n");
