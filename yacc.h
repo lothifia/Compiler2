@@ -55,15 +55,26 @@ extern int yydebug;
     CHAR = 261,
     Plus = 262,
     Div = 263,
-    Dec = 264,
+    Minus = 264,
     Mul = 265,
-    Eql = 266,
-    END = 267,
-    LB = 268,
-    RB = 269,
-    MAIN = 270,
-    SEMI = 271,
-    COMMA = 272
+    EQL = 266,
+    GEQ = 267,
+    LEQ = 268,
+    LSS = 269,
+    GTR = 270,
+    NEQ = 271,
+    END = 272,
+    LB = 273,
+    RB = 274,
+    LP = 275,
+    RP = 276,
+    MAIN = 277,
+    SEMI = 278,
+    COMMA = 279,
+    CONST = 280,
+    PROC = 281,
+    IF = 282,
+    ELSE = 283
   };
 #endif
 /* Tokens.  */
@@ -73,27 +84,38 @@ extern int yydebug;
 #define CHAR 261
 #define Plus 262
 #define Div 263
-#define Dec 264
+#define Minus 264
 #define Mul 265
-#define Eql 266
-#define END 267
-#define LB 268
-#define RB 269
-#define MAIN 270
-#define SEMI 271
-#define COMMA 272
+#define EQL 266
+#define GEQ 267
+#define LEQ 268
+#define LSS 269
+#define GTR 270
+#define NEQ 271
+#define END 272
+#define LB 273
+#define RB 274
+#define LP 275
+#define RP 276
+#define MAIN 277
+#define SEMI 278
+#define COMMA 279
+#define CONST 280
+#define PROC 281
+#define IF 282
+#define ELSE 283
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 67 "pl0.y"
+#line 69 "pl0.y"
 
     int NUM;
     char* VAR;
     char* OP;
 
-#line 97 "yacc.h"
+#line 119 "yacc.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -18,14 +18,25 @@ dev [/]
 "main" {return MAIN;}
 "int" {return INT;}
 "char" {return CHAR;}
+"const" {return CONST;}
+"if" {return IF;}
+"else" {return ELSE;}
 
+
+[(] {return LP;}
+[)] {return RP;}
 [{] {return LB;}
 [}] {return RB;}
 [\n] {++line;}
-[=] {printf("get =\n"); return Eql;}
-[+] {printf("get +\n"); return Plus;}
-[-] {printf("get -\n"); return Dec;}
-[*] {printf("get *\n"); return Mul;}
+"!=" {return NEQ;}
+">=" {return GEQ;}
+"<=" {return LEQ;}
+">" {return GTR;}
+"<" {return LSS;}
+"=" {printf("get =\n"); return EQL;}
+"+" {printf("get +\n"); return Plus;}
+"-" {printf("get -\n"); return Minus;}
+"*" {printf("get *\n"); return Mul;}
 [/] {printf("get /\n"); return Div;}
 [;] {return SEMI;}
 [,] {return COMMA;}
