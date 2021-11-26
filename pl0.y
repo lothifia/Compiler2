@@ -26,6 +26,8 @@
     int c_num;/* use to record const */
     int fortable[cxmax];
     int forx;
+    int vartable[cxmax];
+    int  varx;
 
     enum fct 
     {
@@ -46,6 +48,11 @@
         variable, 
         procedure,
     };
+    enum type
+    {
+        xint,
+        xchar,
+    };
 
     /* 符号表结构 */
     struct tablestruct
@@ -56,7 +63,7 @@
         int level;          /* 所处层，仅const不使用 */ 
         int adr;            /* 地址，仅const不使用 */
         int size;           /* 需要分配的数据区空间, 仅procedure使用 */
-    int for_val;
+    enum type t; /* type */
     };
     struct tablestruct table[txmax]; /* 符号表 */
 
@@ -77,19 +84,26 @@
     char* OP;
 }
 
-%token<NUM> num INT
-%token<VAR> var CHAR
+%token<NUM> num
+%token<VAR> var CHAR INT
 %token<OP> Plus Div Minus Mul EQL GEQ LEQ LSS GTR NEQ
 %token END LB RB LP RP MAIN SEMI COMMA CONST PROC IF ELSE READ WRITE FOR WHILE
-%type<NUM> calcblock get_table_addr get_code_addr declaration_list VarInit Vardecl Vardef 
-%type<NUM> block var_p 
-%type statement VarInit Vardef condition
+%type<NUM> get_table_addr get_code_addr declaration_list VarInit Vardecl Vardef 
+%type<NUM> block var_p var_t
+%type statement VarInit Vardef condition STRING
 
 %%
 /* main{ block } */
 procstart:
     | 
+    defunc
     MAIN LB block RB
+    ;
+
+var_t:
+    INT {$$ = 1;}| CHAR {$$ = 2;}
+    ;
+defunc:
     ;
 
 block:
@@ -121,14 +135,26 @@ declaration_list:
     ;
 
 Vardecl:
+    var_t VarInit SEMI
+     {
+         if($1 == 1){
+         while(varx > 0){
+             table[vartable[varx - 1]].t = xint;
+             --varx;
+         
+         }
+         }
+         else{
+             while(varx > 0){
+                 table[vartable[varx - 1]].t = xchar;
+                 --varx;
+             }
+         }
+     }
+     Vardecl
+    {
+        $$ = $2 + $5;
 
-    INT VarInit SEMI Vardecl
-    {
-        $$ = $2 + $4;
-    }
-    | CHAR VarInit SEMI Vardecl
-    {
-        $$ = $2 + $4;
     }
     | {$$ = 0;}
     ;
@@ -144,6 +170,9 @@ Vardef:
         strcpy(id, $1);
         enter(variable);
         $$ = 1;
+
+        vartable[varx] = tx;
+        ++varx;
     }
     ;
 Constdecl:
@@ -196,6 +225,9 @@ asgnstm:
                 gen(sto, lev - table[$1].level, table[$1].adr);
         }
     }
+    |var_p EQL STRING
+    ;
+STRING:
     ;
 callstm:
     ;
@@ -468,7 +500,9 @@ void displaytable()
 					break;
 				case variable:
 					printf("    %d var   %s ", i, table[i].name);
-					printf("lev=%d addr=%d\n", table[i].level, table[i].adr);
+					printf("lev=%d addr=%d ", table[i].level, table[i].adr);
+                    if(table[i].t == xint) printf("type = int \n");
+                    else printf("type = char \n");
 					/* fprintf(ftable, "    %d var   %s ", i, table[i].name);
 					fprintf(ftable, "lev=%d addr=%d\n", table[i].level, table[i].adr);
                     */

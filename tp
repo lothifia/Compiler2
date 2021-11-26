@@ -1,5 +1,6 @@
 main{
-int adfpa, ooo;
+int ad12312aased, ooo;
+char pp;
 for(ooo = 1; ooo < 5; ooo = ooo +1){
 	write ooo;
 }

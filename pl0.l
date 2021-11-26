@@ -7,7 +7,7 @@
 %}
 
 num [0-9]+
-char [A-Za-z]+[A-Za-z]*
+char [A-Za-z]+[A-Za-z0-9]*
 eq [=]
 plus [+]
 minus [-]

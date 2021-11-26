@@ -50,9 +50,9 @@ extern int yydebug;
   enum yytokentype
   {
     num = 258,
-    INT = 259,
-    var = 260,
-    CHAR = 261,
+    var = 259,
+    CHAR = 260,
+    INT = 261,
     Plus = 262,
     Div = 263,
     Minus = 264,
@@ -83,9 +83,9 @@ extern int yydebug;
 #endif
 /* Tokens.  */
 #define num 258
-#define INT 259
-#define var 260
-#define CHAR 261
+#define var 259
+#define CHAR 260
+#define INT 261
 #define Plus 262
 #define Div 263
 #define Minus 264
@@ -117,7 +117,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 74 "pl0.y"
+#line 81 "pl0.y"
 
     int NUM;
     char* VAR;
