@@ -5,7 +5,6 @@
     #define amax 2048
     #define stacksize 3000
 
-
     #include<stdio.h>
     #include<stdlib.h>
     #include<malloc.h>
@@ -25,7 +24,7 @@
     extern int line;
     int err;
     int c_num;/* use to record const */
-    int fortable[cxmax][3];
+    int fortable[cxmax];
     int forx;
 
     enum fct 
@@ -57,6 +56,7 @@
         int level;          /* 所处层，仅const不使用 */ 
         int adr;            /* 地址，仅const不使用 */
         int size;           /* 需要分配的数据区空间, 仅procedure使用 */
+    int for_val;
     };
     struct tablestruct table[txmax]; /* 符号表 */
 
@@ -166,7 +166,6 @@ constdef:
 /*statement */
 var_p :var
     {
-        printf("get assing var :%s\n", $1);
         $$ = position($1);
     }
     ;
@@ -202,19 +201,45 @@ callstm:
     ;
 forstm:
     FOR LP 
-    asgnstm SEMI get_code_addr
-    condition get_code_addr
+    for_1 SEMI get_code_addr condition get_code_addr
     {
         gen(jpc, 0, 0);
     }
-    SEMI var_change RP 
+    SEMI for_3 RP 
     compstm
     {
+        while(forx > 0)
+        {
+            gen(sto, lev - table[fortable[forx - 1]].level, table[fortable[forx - 1]].adr);
+            forx --;
+        }
         gen(jmp, 0, $5);
         printf("jpc = %d\n", $7);
         code[$7].a = cx;
     }
     ;
+for_1:  asgnstm |
+    ;
+for_2: condition |
+    ;
+for_3:  for_asgn
+    |   for_asgn COMMA for_3
+    ;
+for_asgn:var_p EQL expression
+    {
+        if($1 == 0){
+            yyerror("Symbol not Exist\n");
+        }
+        else{
+            if(table[$1].kind != variable) yyerror("Symbol not variable\n");
+            else{
+                fortable[forx] = $1;
+                forx ++;
+            }
+
+        }
+    }
+
 ifstm: IF LP condition RP get_code_addr
     {
         gen(jpc,0,0);
