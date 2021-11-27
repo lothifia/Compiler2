@@ -219,7 +219,6 @@ var_p :var
         $$ = position($1);
         gen(lit, 0, table[$$].adr);
         gen(lit, 0, lev - table[$$].level);
-
     }
     ;
 statements :
@@ -271,8 +270,13 @@ forstm:
     {
         while(forx > 0)
         {
+            if(table[fortable[forx - 1]].is_arry){
+                gen(sto, 0, 0);
+                --forx;
+            }else{
             gen(sto, lev - table[fortable[forx - 1]].level, table[fortable[forx - 1]].adr );
-            forx --;
+            --forx;
+            }
         }
         gen(jmp, 0, $5);
         printf("jpc = %d\n", $7);
@@ -396,11 +400,15 @@ factor: var_p
         if($1 == 0) yyerror("Symbol not found \n");
         else{
             if(table[$1].kind == procedure) yyerror("procedure can not be variable\n");
-            else if(table[$1].is_arry != 0) yyerror("arry can not be variable\n");
             else{
                 if(table[$1].kind == constant) gen(lit, 0, table[$1].val);
                 else{
-                    gen(lod, lev - table[$1].level, table[$1].adr);
+                    if(table[$1].is_arry){
+                        printf("$1 is :%d, \n", $1);
+                        gen(lod, 0, 0);
+                    }else{
+                        gen(lod, lev - table[$1].level, table[$1].adr);
+                    }
                 }
             }
         }
@@ -660,7 +668,6 @@ void interpret()
 				break;
 			case lod:	/* 取相对当前过程的数据基地址为a的内存的值到栈顶 */
                 if(i.l == 0 && i.a == 0){
-                    printf("local %d\n",t);
                     s[t - 2] = s[base(s[t],s, b) + s[t - 1] + s[t - 2]];
                     t = t - 2;
                 }else{
@@ -670,8 +677,6 @@ void interpret()
 				break;
 			case sto:	/* 栈顶的值存到相对当前过程的数据基地址为a的内存 */
                 if(i.l == 0 && i.a == 0){
-                    printf("local %d\n",base(s[t - 1], s, b) + s[t -2] + s[t - 3]);
-                    printf("t at %d\n", t);
                     s[base(s[t - 1], s, b) + s[t - 2] + s[t - 3]] = s[t];
                     t = t - 4;
                 }else{

@@ -1,10 +1,8 @@
 main{
-int ad12312aased, ooo;
 int a[5];
-char pp;
-for(ooo = 1; ooo < 5; ooo = ooo +1){
-	a[ooo] = ooo - 3;
-	write a[ooo];
+a[1] = 1;
+a[2] = 3;
+for(;a[1] < 4; a[1] = a[1] + 1){
+write a[1];
 }
-write ooo;
 }
