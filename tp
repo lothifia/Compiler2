@@ -1,8 +1,10 @@
 main{
 int ad12312aased, ooo;
+int a[5];
 char pp;
 for(ooo = 1; ooo < 5; ooo = ooo +1){
-	write ooo;
+	a[ooo] = ooo - 3;
+	write a[ooo];
 }
 write ooo;
 }

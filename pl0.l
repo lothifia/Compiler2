@@ -26,6 +26,8 @@ dev [/]
 "while" {return WHILE;}
 "for" {return FOR;}
 
+"["  {return LMB;}
+"]" {return RMB;}
 [(] {return LP;}
 [)] {return RP;}
 [{] {return LB;}

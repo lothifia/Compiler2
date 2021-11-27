@@ -78,7 +78,9 @@ extern int yydebug;
     READ = 284,
     WRITE = 285,
     FOR = 286,
-    WHILE = 287
+    WHILE = 287,
+    LMB = 288,
+    RMB = 289
   };
 #endif
 /* Tokens.  */
@@ -112,18 +114,20 @@ extern int yydebug;
 #define WRITE 285
 #define FOR 286
 #define WHILE 287
+#define LMB 288
+#define RMB 289
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 81 "pl0.y"
+#line 88 "pl0.y"
 
     int NUM;
     char* VAR;
     char* OP;
 
-#line 127 "yacc.h"
+#line 131 "yacc.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

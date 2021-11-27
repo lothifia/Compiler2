@@ -10,6 +10,7 @@
     #include<malloc.h>
     #include<memory.h>
     #include<string.h>
+    #include<stdbool.h>
     FILE* fin;
     FILE* foutput;
     FILE* ftable;
@@ -25,9 +26,13 @@
     int err;
     int c_num;/* use to record const */
     int fortable[cxmax];
+    int foroffset[cxmax];
     int forx;
     int vartable[cxmax];
     int  varx;
+    int total_var;
+    int tem;
+    int offset;
 
     enum fct 
     {
@@ -64,12 +69,14 @@
         int adr;            /* 地址，仅const不使用 */
         int size;           /* 需要分配的数据区空间, 仅procedure使用 */
     enum type t; /* type */
+    int is_arry;
     };
     struct tablestruct table[txmax]; /* 符号表 */
 
 
     void init();
     void enter(enum object k);
+    void _enter(enum object k, int IsArry);
     void setdx(int n);
     void gen(enum fct x, int y, int z);
     void displaytable();
@@ -87,7 +94,7 @@
 %token<NUM> num
 %token<VAR> var CHAR INT
 %token<OP> Plus Div Minus Mul EQL GEQ LEQ LSS GTR NEQ
-%token END LB RB LP RP MAIN SEMI COMMA CONST PROC IF ELSE READ WRITE FOR WHILE
+%token END LB RB LP RP MAIN SEMI COMMA CONST PROC IF ELSE READ WRITE FOR WHILE LMB RMB
 %type<NUM> get_table_addr get_code_addr declaration_list VarInit Vardecl Vardef 
 %type<NUM> block var_p var_t
 %type statement VarInit Vardef condition STRING
@@ -95,14 +102,13 @@
 %%
 /* main{ block } */
 procstart:
-    | 
-    defunc
+    | defunc
     MAIN LB block RB
     ;
 
-var_t:
-    INT {$$ = 1;}| CHAR {$$ = 2;}
+var_t: INT {$$ = 1;}| CHAR {$$ = 2;}
     ;
+
 defunc:
     ;
 
@@ -111,6 +117,8 @@ block:
        table[tx].adr = cx;
         $<NUM>$ = cx;
         gen(jmp, 0, 0);
+        total_var = 0;
+
     }
     declaration_list
     statements
@@ -120,22 +128,19 @@ block:
     }
     ;
 
-declaration_list:
-    get_table_addr
-    Constdecl Vardecl /* Procdecls */
+declaration_list: get_table_addr
+    Constdecl Vardecl 
     {
-        
+        printf("total_var: %d\n",total_var);
         setdx($3);
-        printf("cx: %d\n", $1);
         code[$1].a = cx;
-        gen(ini, 0, $3 + 3);
+        gen(ini, 0, total_var + 3);
         displaytable();
     }
     |
     ;
 
-Vardecl:
-    var_t VarInit SEMI
+Vardecl: var_t VarInit SEMI
      {
          if($1 == 1){
          while(varx > 0){
@@ -153,22 +158,34 @@ Vardecl:
      }
      Vardecl
     {
+        printf("2: %d, 5: %d\n", $2, $5);
         $$ = $2 + $5;
 
     }
     | {$$ = 0;}
     ;
 
-VarInit:
-    Vardef { $$ = $1;}
+VarInit: Vardef 
+    { 
+        $$ = $1;
+    }
     | Vardef COMMA VarInit {$$ = $1 + $3;}
     ;
 
-Vardef:
-    var 
+Vardef: var 
     {
+        ++total_var;
         strcpy(id, $1);
-        enter(variable);
+        _enter(variable, 0);
+        $$ = 1;
+        vartable[varx] = tx;
+        ++varx;
+    }
+    | var LMB num RMB
+    {
+        total_var += $3;
+        strcpy(id, $1);
+        _enter(variable, $3);
         $$ = 1;
 
         vartable[varx] = tx;
@@ -188,7 +205,7 @@ constdef:
     {
         strcpy(id, $1);
         c_num = $3;
-        enter(constant);
+        _enter(constant, 0);
     }
     ;
 
@@ -196,6 +213,13 @@ constdef:
 var_p :var
     {
         $$ = position($1);
+    }
+    | var LMB factor RMB
+    {
+        $$ = position($1);
+        gen(lit, 0, table[$$].adr);
+        gen(lit, 0, lev - table[$$].level);
+
     }
     ;
 statements :
@@ -214,15 +238,20 @@ statement:
 compstm: statement
     | LB statements RB;
 asgnstm:
-    var_p EQL expression
+    var_p 
+    EQL expression
     {
         if($1 == 0){
             yyerror("Symbol not Exist\n");
         }
         else{
             if(table[$1].kind != variable) yyerror("Symbol not variable\n");
-            else
-                gen(sto, lev - table[$1].level, table[$1].adr);
+            else{
+                if(table[$1].is_arry == 0) {gen(sto, lev - table[$1].level, table[$1].adr);}
+                else{
+                    gen(sto, 0, 0);
+                }
+            }
         }
     }
     |var_p EQL STRING
@@ -242,7 +271,7 @@ forstm:
     {
         while(forx > 0)
         {
-            gen(sto, lev - table[fortable[forx - 1]].level, table[fortable[forx - 1]].adr);
+            gen(sto, lev - table[fortable[forx - 1]].level, table[fortable[forx - 1]].adr );
             forx --;
         }
         gen(jmp, 0, $5);
@@ -298,9 +327,15 @@ readstm: READ var_p SEMI
     ;
 writestm:WRITE var_p SEMI
     {
-        gen(lod, lev - table[$2].level,table[$2].adr);
-        gen(opr, 0, 14);   
-        gen(opr, 0, 15);
+        if(table[$2].is_arry == 0){
+            gen(lod, lev - table[$2].level,table[$2].adr);
+            gen(opr, 0, 14);   
+            gen(opr, 0, 15);
+        }else{
+            gen(lod, 0, 0);
+            gen(opr, 0, 14);   
+            gen(opr, 0, 15);
+        }
     }
     ;
 
@@ -360,10 +395,10 @@ factor: var_p
     {
         if($1 == 0) yyerror("Symbol not found \n");
         else{
-            if(table[$1].kind != variable) yyerror("Symbol should be variable\n");
+            if(table[$1].kind == procedure) yyerror("procedure can not be variable\n");
+            else if(table[$1].is_arry != 0) yyerror("arry can not be variable\n");
             else{
-                if(table[$1].kind == constant)
-                gen(lit, 0, table[$1].val);
+                if(table[$1].kind == constant) gen(lit, 0, table[$1].val);
                 else{
                     gen(lod, lev - table[$1].level, table[$1].adr);
                 }
@@ -377,17 +412,6 @@ factor: var_p
     | LP expression RP
     ;
 
-/*calc test
-calcblock:
-    num Plus num{$$ = $1 + $3;}
-    |
-    num Div num{$$ = $1 / $3;}
-    |
-    num Minus num{$$ = $1 - $3;}
-    |
-    num Mul num{$$ = $1 * $3;}
-    ;
-*/
 get_table_addr:
     {
         $$ = tx;
@@ -409,10 +433,14 @@ void init()
 	cx = 0;
 	px = 0;
     forx = 0;
+    varx = 0;
   lev = 0;   
   proctable[0] = 0;
   c_num = 0;
   err = 0;
+  total_var = 0;
+
+  offset = 0;
 }
 int position(char* a)
 {
@@ -421,6 +449,12 @@ int position(char* a)
     i = tx;
     while(strcmp(table[i].name, a) != 0) --i;
     return i;
+}
+
+void _enter(enum object k, int IsArry)
+{
+    enter(k);
+    table[tx].is_arry = IsArry;
 }
 void enter(enum object k)
 {
@@ -443,8 +477,14 @@ void enter(enum object k)
 void setdx(int n)
 {
     printf("---------------%d\n", n);
+    int addr = 3 + total_var;
     for(int i = 1; i <= n; i++){
-        table[tx - i + 1].adr = n - i + 3;
+        if(table[tx - i + 1].is_arry){
+            addr -= table[tx - i + 1].is_arry;
+        }else{
+            addr -= 1;
+        }
+        table[tx - i + 1].adr = addr;
     }
 }
 
@@ -548,11 +588,11 @@ void interpret()
 				switch (i.a)
 				{
 					case 0:  /* 函数调用结束后返回 */
-                        printf("t: %d \n p: %d \nb: %d \n ******\n", t, p, b);
+                        /* printf("t: %d \n p: %d \nb: %d \n ******\n", t, p, b);*/
 						t = b - 1;
 						p = s[t + 3];
 						b = s[t + 2];
-                        printf("t: %d \n p: %d \nb: %d \n *******\n", t, p, b);
+                    /*        printf("t: %d \n p: %d \nb: %d \n *******\n", t, p, b); */
 						break;
 					case 1: /* 栈顶元素取反 */
 						s[t] = - s[t];
@@ -619,12 +659,25 @@ void interpret()
 				}
 				break;
 			case lod:	/* 取相对当前过程的数据基地址为a的内存的值到栈顶 */
-				t = t + 1;
-				s[t] = s[base(i.l,s,b) + i.a];				
+                if(i.l == 0 && i.a == 0){
+                    printf("local %d\n",t);
+                    s[t - 2] = s[base(s[t],s, b) + s[t - 1] + s[t - 2]];
+                    t = t - 2;
+                }else{
+				    t = t + 1;
+				    s[t] = s[base(i.l,s,b) + i.a];				
+                }
 				break;
 			case sto:	/* 栈顶的值存到相对当前过程的数据基地址为a的内存 */
-				s[base(i.l, s, b) + i.a] = s[t];
-				t = t - 1;
+                if(i.l == 0 && i.a == 0){
+                    printf("local %d\n",base(s[t - 1], s, b) + s[t -2] + s[t - 3]);
+                    printf("t at %d\n", t);
+                    s[base(s[t - 1], s, b) + s[t - 2] + s[t - 3]] = s[t];
+                    t = t - 4;
+                }else{
+				    s[base(i.l, s, b) + i.a] = s[t];
+				    t = t - 1;
+                }
 				break;
 			case cal:	/* 调用子过程 */
 				s[t + 1] = base(i.l, s, b);	/* 将父过程基地址入栈，即建立静态链 */
@@ -700,7 +753,7 @@ procdecl:
     inc_px PROC var SEMI
     {
         strcpy(id, $3);
-        enter(procedure);
+        _enter(procedure, 0);
         proctable[px] = tx;
     }
     ;
