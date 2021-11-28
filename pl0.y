@@ -33,6 +33,10 @@
     int total_var;
     int tem;
     int offset;
+    int preVar;
+    int preVar_cnt;
+    int proc_p;
+    int pass_cnt;
 
     enum fct 
     {
@@ -57,6 +61,7 @@
     {
         xint,
         xchar,
+        xvoid
     };
 
     /* 符号表结构 */
@@ -70,6 +75,7 @@
         int size;           /* 需要分配的数据区空间, 仅procedure使用 */
     enum type t; /* type */
     int is_arry;
+    int parameter_cnt;
     };
     struct tablestruct table[txmax]; /* 符号表 */
 
@@ -84,6 +90,7 @@
     void interpret();
     int base(int l, int* s, int b);
 
+
 %}
 %union{
     int NUM;
@@ -92,52 +99,119 @@
 }
 
 %token<NUM> num
-%token<VAR> var CHAR INT
+%token<VAR> var CHAR INT VOID
 %token<OP> Plus Div Minus Mul EQL GEQ LEQ LSS GTR NEQ
-%token END LB RB LP RP MAIN SEMI COMMA CONST PROC IF ELSE READ WRITE FOR WHILE LMB RMB
+%token END LB RB LP RP MAIN SEMI COMMA CONST PROC IF ELSE READ WRITE FOR WHILE LMB RMB RETURN
 %type<NUM> get_table_addr get_code_addr declaration_list VarInit Vardecl Vardef 
-%type<NUM> block var_p var_t
-%type statement VarInit Vardef condition STRING
+%type<NUM> block var_p var_t prevardecl prevardef pass_factor
+%type statement VarInit Vardef condition STRING defunc
 
 %%
 /* main{ block } */
 procstart:
-    | defunc
-    MAIN LB block RB
-    ;
-
-var_t: INT {$$ = 1;}| CHAR {$$ = 2;}
-    ;
-
-defunc:
-    ;
-
-block:
+    get_code_addr
     {
-       table[tx].adr = cx;
-        $<NUM>$ = cx;
+        preVar_cnt = 0;
         gen(jmp, 0, 0);
-        total_var = 0;
+    }
+    defunc 
+    MAIN
+    {
+        /* Main procedure */
+        strcpy(id, "main");
+        _enter(procedure, 0);
+        table[tx].adr = cx;
+        table[tx].t = xvoid;
+        code[$1].a = cx;
+        proctable[px] = tx;
 
     }
+    LB block RB
+    ;
+
+var_t: INT {$$ = 1;}| CHAR {$$ = 2;}| VOID {$$ = 3;}
+    ;
+
+defunc: 
+    var_t var
+    {
+        strcpy(id, $2);
+        _enter(procedure, 0);
+        if($1 == 1){
+            table[tx].t = xint;
+        }else if($1 == 2){
+            table[tx].t = xchar;
+        }else if($1 == 3){
+            table[tx].t = xvoid;
+        }
+        proc_p = tx;
+    } 
+    get_table_addr get_code_addr LP prevardecl RP
+    {
+        table[$4].adr = $5;
+        table[$4].parameter_cnt = $7;
+        printf("pcnt = %d, table addr is %d\n", $7, $5);
+        preVar_cnt = $7;
+    }
+    LB block RB 
+    {
+        preVar_cnt = 0;
+        total_var = 0;
+        proc_p = 0;
+    }
+    defunc
+    |
+    ;
+prevardecl: prevardef { $$ = $1 ; }
+    | prevardef COMMA prevardecl
+    {
+        $$ = $1 + $3;
+    }
+    | { $$ = 0 ;}
+    ;
+prevardef: var_t var
+    {
+        strcpy(id, $2);
+        _enter(variable, 0);
+        if($1 == 1) table[tx].t = xint;
+        else if($1 == 2) table[tx].t = xchar;
+        total_var ++;
+        $$ = 1;
+    }
+    | var_t var LMB num RMB
+    {
+        $$ = 1;
+        strcpy(id, $2);
+        _enter(variable, $4);
+        if($1 == 1) table[tx].t = xint;
+        else if($1 == 2) table[tx].t = xchar;
+        total_var += $4;
+        $$ = 1;
+    }
+    ;
+block:
     declaration_list
+    {
+        setdx($1 + preVar_cnt);
+        gen(ini, 0, total_var + 3);
+        for(int i = 0; i < preVar_cnt; i++){
+            gen(sto, -1 - i , 2 + preVar_cnt - i);
+        }
+        
+    }
     statements
     {
-        gen(opr, 0, 0);
-        listall();
+        gen(opr, preVar_cnt, 0);
     }
     ;
 
-declaration_list: get_table_addr
+declaration_list: 
     Constdecl Vardecl 
     {
         printf("total_var: %d\n",total_var);
-        setdx($3);
-        code[$1].a = cx;
-        gen(ini, 0, total_var + 3);
-        displaytable();
+        $$ = $2;
     }
-    |
+    |{$$ = 0 ;}
     ;
 
 Vardecl: var_t VarInit SEMI
@@ -146,7 +220,6 @@ Vardecl: var_t VarInit SEMI
          while(varx > 0){
              table[vartable[varx - 1]].t = xint;
              --varx;
-         
          }
          }
          else{
@@ -160,7 +233,6 @@ Vardecl: var_t VarInit SEMI
     {
         printf("2: %d, 5: %d\n", $2, $5);
         $$ = $2 + $5;
-
     }
     | {$$ = 0;}
     ;
@@ -233,6 +305,18 @@ statement:
     |   readstm
     |   writestm
     |   forstm
+    |   returnstm
+    ;
+returnstm:
+    {
+        if(table[proc_p].t == xvoid) yyerror("error void cannot return\n");
+    }
+    RETURN 
+    factor SEMI
+    {
+        gen(opr, preVar_cnt, 0);
+        --px;
+    }
     ;
 compstm: statement
     | LB statements RB;
@@ -407,6 +491,7 @@ factor: var_p
                         printf("$1 is :%d, \n", $1);
                         gen(lod, 0, 0);
                     }else{
+                        printf("name %s, adr %d", table[$1].name, table[$1].adr);
                         gen(lod, lev - table[$1].level, table[$1].adr);
                     }
                 }
@@ -418,6 +503,28 @@ factor: var_p
         gen(lit, 0, $1);
     }
     | LP expression RP
+    |call_func
+    ;
+call_func:
+    var_p 
+    {
+        ++px;
+        proctable[px] = $1;
+    }
+    LP pass_factor RP
+    {
+        if(table[$1].kind != procedure) yyerror("Is  not a procedure \n");
+        else{
+            if($4 !=  table[$1].parameter_cnt ) yyerror("parameter number not match\n");
+            gen(cal, 0, table[$1].adr);
+        }
+    }
+    ;
+
+pass_factor: factor {$$ = 1;}
+    | factor COMMA pass_factor
+        {$$ = 1 + $3;}
+    | {$$ = 0;}
     ;
 
 get_table_addr:
@@ -596,11 +703,17 @@ void interpret()
 				switch (i.a)
 				{
 					case 0:  /* 函数调用结束后返回 */
-                        /* printf("t: %d \n p: %d \nb: %d \n ******\n", t, p, b);*/
+                    if(i.l != 0){
+                        t = b - 1;
+                        p = s[t + 3];
+                        b = s[t + 2];
+                        t -= i.l;
+                    }else{
 						t = b - 1;
 						p = s[t + 3];
 						b = s[t + 2];
-                    /*        printf("t: %d \n p: %d \nb: %d \n *******\n", t, p, b); */
+                    }
+                        printf("return to t: %d p: %d b: %d \n *******\n", t, p, b);
 						break;
 					case 1: /* 栈顶元素取反 */
 						s[t] = - s[t];
@@ -674,25 +787,35 @@ void interpret()
 				    t = t + 1;
 				    s[t] = s[base(i.l,s,b) + i.a];				
                 }
+                    printf("t is %d,lod at : %d  + %d ,%d \n",t ,base(i.l, s, b), i.a, s[base(i.l, s,b) + i.a]);
 				break;
 			case sto:	/* 栈顶的值存到相对当前过程的数据基地址为a的内存 */
-                if(i.l == 0 && i.a == 0){
+                if(i.l < 0){
+                    s[b + i.a] = s[b + i.l];   
+                    printf("wa!!\n");
+                    printf("i.l = %d, i.a = %d\n", i.l, i.a);
+                }
+                else if(i.l == 0 && i.a == 0){
                     s[base(s[t - 1], s, b) + s[t - 2] + s[t - 3]] = s[t];
                     t = t - 4;
                 }else{
 				    s[base(i.l, s, b) + i.a] = s[t];
 				    t = t - 1;
                 }
+                    printf("t is %d,sto at : %d  + %d , %d \n",t ,base(i.l, s, b), i.a, s[b  + i.a]);
 				break;
 			case cal:	/* 调用子过程 */
+                printf("now call , t at %d\n", t);
 				s[t + 1] = base(i.l, s, b);	/* 将父过程基地址入栈，即建立静态链 */
 				s[t + 2] = b;	/* 将本过程基地址入栈，即建立动态链 */
 				s[t + 3] = p;	/* 将当前指令指针入栈，即保存返回地址 */
 				b = t + 1;	/* 改变基地址指针值为新过程的基地址 */
 				p = i.a;	/* 跳转 */
+                printf("t: %d p: %d b: %d \n *******\n", t, p, b);
 				break;
 			case ini:	/* 在数据栈中为被调用的过程开辟a个单元的数据区 */
 				t = t + i.a;	
+                printf("ini t is %d\n", t);
 				break;
 			case jmp:	/* 直接跳转 */
 				p = i.a;
@@ -741,6 +864,8 @@ int main(){
     init();
 
     yyparse();
+    displaytable();
+    listall();
     interpret();
     fclose(fin);
     /* fclose(ftable);
@@ -748,28 +873,3 @@ int main(){
     */
     return 0;
 }
-
-/* not use
-Procdecls:
-    Procdecls procdecl procbody
-    |
-    ;
-procdecl:
-    inc_px PROC var SEMI
-    {
-        strcpy(id, $3);
-        _enter(procedure, 0);
-        proctable[px] = tx;
-    }
-    ;
-procbody:
-    inc_level block dec_level_px SEMI
-    ;
-inc_px: { ++px; }
-    ;
-inc_level: {++lev;}
-    ;
-dec_level_px: {--px; --lev;}
-    ;
-
-    */

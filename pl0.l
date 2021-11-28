@@ -25,6 +25,8 @@ dev [/]
 "read" {return READ;}
 "while" {return WHILE;}
 "for" {return FOR;}
+"void" {return VOID;}
+"return" {return RETURN;}
 
 "["  {return LMB;}
 "]" {return RMB;}
