@@ -1,12 +1,11 @@
-int funca(int p, int c){
-    int tem;
-    tem = 3 * p;
-    return tem;
+int funca(int a){
+    a = 3;
+    return a;
 }
 main{
+    int b[3];
     int a;
-    int a2;
-    a2 =23;
-    a = funca(a2,12);
-    write a;
+    a = 1;
+    b[2] = funca(b);
+    write b[2];
 }
