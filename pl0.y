@@ -3,6 +3,7 @@
     #define cxmax 2000
     #define txmax 1000
     #define amax 2048
+    #define strmax 20000
     #define stacksize 3000
 
     #include<stdio.h>
@@ -37,6 +38,8 @@
     int preVar_cnt;
     int proc_p;
     int pass_cnt;
+    int isString;
+    char buffer[strmax];
 
     enum fct 
     {
@@ -284,10 +287,14 @@ constdef:
 /*statement */
 var_p :var
     {
+        isString = 0;
         $$ = position($1);
+        if(table[$$].t == xchar) isString = 1;
+
     }
     | var LMB factor RMB
     {
+        isString = 0;
         $$ = position($1);
         gen(lit, 0, table[$$].adr);
         gen(lit, 0, lev - table[$$].level);
@@ -339,9 +346,10 @@ asgnstm:
         }
     }
     |var_p EQL STRING
+
     ;
 STRING:
-    ;
+;
 callstm:
     ;
 forstm:
@@ -410,8 +418,25 @@ whilestm: WHILE LP get_code_addr condition RP get_code_addr
     ;
 readstm: READ var_p SEMI
     {
-        gen(opr, 0, 16);
-        gen(sto, lev - table[$2].level, table[$2].adr);
+        if(table[$2].is_arry == 0){
+            gen(opr, 0, 16);
+            gen(sto, lev - table[$2].level, table[$2].adr);
+        }else {
+            if(isString == 0) {
+                gen(opr, 0, 16);
+                gen(sto, 0, 0);
+            }
+            else{
+                gen(opr, table[$2].is_arry, 16);
+                for(int i = 0; i < table[$2].is_arry; i++)
+                {
+                    gen(lit, 0, i);
+                    gen(lit, 0, table[$2].adr);
+                    gen(lit, 0, lev - table[$2].level);
+                    gen(sto, table[$2].is_arry, 0);
+                }
+            }
+        }
     }
     ;
 writestm:WRITE var_p SEMI
@@ -767,12 +792,27 @@ void interpret()
 					    /* fprintf(fresult,"\n"); */
 						break;
 					case 16:/* 读入一个输入置于栈顶 */
-						t = t + 1;
-						printf("?");
-						/* fprintf(fresult, "?"); */
-						scanf("%d", &(s[t]));
-						/* fprintf(fresult, "%d\n", s[t]); */						
+                        if(i.l == 0){
+                            t = t + 1;
+                            printf("?");
+                            /* fprintf(fresult, "?"); */
+                            scanf("%d", &(s[t]));
+                            /* fprintf(fresult, "%d\n", s[t]); */						
+                        }else{
+                            printf("? (need a string)");
+                            scanf("%s", &buffer);
+                            int buffer_len = strlen(buffer);
+
+                            printf("i.l %d, t %d \n", i.l, t);
+                            for(int cnt_i = 0; cnt_i < i.l; cnt_i++){
+                                printf("t %d, buffer %d \n", t, buffer[cnt_i]);
+                                t = t + 1;
+                                s[t] = buffer[cnt_i];
+                            }
+                        }
+
 						break;
+
 				}
 				break;
 			case lod:	/* 取相对当前过程的数据基地址为a的内存的值到栈顶 */
@@ -800,6 +840,9 @@ void interpret()
                 }else if(i.l == 0 && i.a == 0){
                     s[base(s[t - 1], s, b) + s[t - 2] + s[t - 3]] = s[t];
                     t = t - 4;
+                }else if(i.l > 0 && i.a == 0){
+                    s[base(s[t], s, b) + s[t - 1] + s[t - 2]] = s[t - i.l];
+                    t = t - 3;
                 }else{
 				    s[base(i.l, s, b) + i.a] = s[t];
 				    t = t - 1;

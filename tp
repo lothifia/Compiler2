@@ -1,11 +1,5 @@
-int funca(int a){
-    a = 3;
-    return a;
-}
 main{
-    int b[3];
-    int a;
-    a = 1;
-    b[2] = funca(b);
-    write b[2];
+	char str[10];
+	read str;
+    write str[2];
 }
