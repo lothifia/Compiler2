@@ -1,5 +1,5 @@
 main{
 	char str[10];
 	read str;
-    write str[2];
+    write str;
 }

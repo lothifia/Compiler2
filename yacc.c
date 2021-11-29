@@ -679,10 +679,10 @@ static const yytype_int16 yyrline[] =
      272,   275,   276,   279,   288,   295,   304,   305,   308,   309,
      310,   311,   312,   313,   314,   315,   318,   318,   329,   330,
      332,   348,   351,   353,   358,   356,   379,   379,   383,   384,
-     386,   402,   401,   410,   409,   419,   442,   456,   460,   464,
-     468,   472,   476,   480,   483,   484,   488,   489,   493,   498,
-     499,   503,   508,   527,   531,   532,   536,   535,   551,   552,
-     554,   558,   563
+     386,   402,   401,   410,   409,   419,   443,   465,   469,   473,
+     477,   481,   485,   489,   492,   493,   497,   498,   502,   507,
+     508,   512,   517,   536,   540,   541,   545,   544,   560,   561,
+     563,   567,   572
 };
 #endif
 
@@ -1980,6 +1980,7 @@ yyreduce:
             }
             else{
                 gen(opr, table[(yyvsp[-1].NUM)].is_arry, 16);
+                printf("is_arry = %d \n" , table[(yyvsp[-1].NUM)].is_arry);
                 for(int i = 0; i < table[(yyvsp[-1].NUM)].is_arry; i++)
                 {
                     gen(lit, 0, i);
@@ -1990,115 +1991,123 @@ yyreduce:
             }
         }
     }
-#line 1994 "yacc.c"
+#line 1995 "yacc.c"
     break;
 
   case 66:
-#line 443 "pl0.y"
+#line 444 "pl0.y"
     {
         if(table[(yyvsp[-1].NUM)].is_arry == 0){
             gen(lod, lev - table[(yyvsp[-1].NUM)].level,table[(yyvsp[-1].NUM)].adr);
             gen(opr, 0, 14);   
             gen(opr, 0, 15);
         }else{
-            gen(lod, 0, 0);
-            gen(opr, 0, 14);   
-            gen(opr, 0, 15);
+            if(isString == 0){
+                gen(lod, 0, 0);
+                gen(opr, 0, 14);   
+                gen(opr, 0, 15);
+            }else{
+                int str_l = 0;
+                for(int i =0; i < table[(yyvsp[-1].NUM)].is_arry; i++){
+                    gen(lod, lev - table[(yyvsp[-1].NUM)].level, table[(yyvsp[-1].NUM)].adr + i);
+                }
+                gen(opr, table[(yyvsp[-1].NUM)].is_arry, 14);
+            }
         }
     }
-#line 2010 "yacc.c"
+#line 2019 "yacc.c"
     break;
 
   case 67:
-#line 457 "pl0.y"
+#line 466 "pl0.y"
             {
                 gen(opr, 0, 8);
             }
-#line 2018 "yacc.c"
+#line 2027 "yacc.c"
     break;
 
   case 68:
-#line 461 "pl0.y"
+#line 470 "pl0.y"
             {
                 gen(opr, 0, 9);
             }
-#line 2026 "yacc.c"
+#line 2035 "yacc.c"
     break;
 
   case 69:
-#line 465 "pl0.y"
+#line 474 "pl0.y"
             {
                 gen(opr, 0, 10);
             }
-#line 2034 "yacc.c"
+#line 2043 "yacc.c"
     break;
 
   case 70:
-#line 469 "pl0.y"
+#line 478 "pl0.y"
             {
                 gen(opr, 0, 13);
             }
-#line 2042 "yacc.c"
+#line 2051 "yacc.c"
     break;
 
   case 71:
-#line 473 "pl0.y"
+#line 482 "pl0.y"
             {
                 gen(opr, 0, 12);
             }
-#line 2050 "yacc.c"
+#line 2059 "yacc.c"
     break;
 
   case 72:
-#line 477 "pl0.y"
+#line 486 "pl0.y"
             {
                 gen(opr, 0, 11);
             }
-#line 2058 "yacc.c"
+#line 2067 "yacc.c"
     break;
 
   case 75:
-#line 485 "pl0.y"
+#line 494 "pl0.y"
     {
         gen(opr, 0, 1);
     }
-#line 2066 "yacc.c"
+#line 2075 "yacc.c"
     break;
 
   case 77:
-#line 490 "pl0.y"
+#line 499 "pl0.y"
     {
         gen(opr, 0, 2);
     }
-#line 2074 "yacc.c"
+#line 2083 "yacc.c"
     break;
 
   case 78:
-#line 494 "pl0.y"
+#line 503 "pl0.y"
     {
         gen(opr, 0, 3);
     }
-#line 2082 "yacc.c"
+#line 2091 "yacc.c"
     break;
 
   case 80:
-#line 500 "pl0.y"
+#line 509 "pl0.y"
     {
         gen(opr, 0, 4);
     }
-#line 2090 "yacc.c"
+#line 2099 "yacc.c"
     break;
 
   case 81:
-#line 504 "pl0.y"
+#line 513 "pl0.y"
     {
         gen(opr, 0 , 5);
     }
-#line 2098 "yacc.c"
+#line 2107 "yacc.c"
     break;
 
   case 82:
-#line 509 "pl0.y"
+#line 518 "pl0.y"
     {
         if((yyvsp[0].NUM) == 0) yyerror("Symbol not found \n");
         else{
@@ -2117,28 +2126,28 @@ yyreduce:
             }
         }
     }
-#line 2121 "yacc.c"
+#line 2130 "yacc.c"
     break;
 
   case 83:
-#line 528 "pl0.y"
+#line 537 "pl0.y"
     {
         gen(lit, 0, (yyvsp[0].NUM));
-    }
-#line 2129 "yacc.c"
-    break;
-
-  case 86:
-#line 536 "pl0.y"
-    {
-        ++px;
-        proctable[px] = (yyvsp[0].NUM);
     }
 #line 2138 "yacc.c"
     break;
 
+  case 86:
+#line 545 "pl0.y"
+    {
+        ++px;
+        proctable[px] = (yyvsp[0].NUM);
+    }
+#line 2147 "yacc.c"
+    break;
+
   case 87:
-#line 541 "pl0.y"
+#line 550 "pl0.y"
     {
         if(table[(yyvsp[-4].NUM)].kind != procedure) yyerror("Is  not a procedure \n");
         else{
@@ -2147,45 +2156,45 @@ yyreduce:
             if(table[(yyvsp[-4].NUM)].t != xvoid) gen(lod, -1, 0); /* get return */
         }
     }
-#line 2151 "yacc.c"
+#line 2160 "yacc.c"
     break;
 
   case 88:
-#line 551 "pl0.y"
+#line 560 "pl0.y"
                     {(yyval.NUM) = 1;}
-#line 2157 "yacc.c"
+#line 2166 "yacc.c"
     break;
 
   case 89:
-#line 553 "pl0.y"
+#line 562 "pl0.y"
         {(yyval.NUM) = 1 + (yyvsp[0].NUM);}
-#line 2163 "yacc.c"
+#line 2172 "yacc.c"
     break;
 
   case 90:
-#line 554 "pl0.y"
+#line 563 "pl0.y"
       {(yyval.NUM) = 0;}
-#line 2169 "yacc.c"
+#line 2178 "yacc.c"
     break;
 
   case 91:
-#line 558 "pl0.y"
+#line 567 "pl0.y"
     {
         (yyval.NUM) = tx;
     }
-#line 2177 "yacc.c"
+#line 2186 "yacc.c"
     break;
 
   case 92:
-#line 563 "pl0.y"
+#line 572 "pl0.y"
     {
         (yyval.NUM) = cx;
     }
-#line 2185 "yacc.c"
+#line 2194 "yacc.c"
     break;
 
 
-#line 2189 "yacc.c"
+#line 2198 "yacc.c"
 
       default: break;
     }
@@ -2417,7 +2426,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 567 "pl0.y"
+#line 576 "pl0.y"
 
 
 yyerror(const char* s){
@@ -2637,9 +2646,19 @@ void interpret()
 						s[t] = (s[t] <= s[t + 1]);
 						break;
 					case 14:/* 栈顶值输出 */
-						printf("%d", s[t]);
-						/* fprintf(fresult, "%d", s[t]); */
-						t = t - 1;
+                        if(i.l == 0){
+                            printf("%d", s[t]);
+                            /* fprintf(fresult, "%d", s[t]); */
+                            t = t - 1;
+                        }else if(i.l > 0){
+                            memset(buffer, 0, sizeof(buffer));
+                            for(int ii = 0; ii < i.l; ii++){
+                                printf("t is %d s[t]: %d \n", t ,s[t]);
+                                buffer[i.l - ii - 1] = s[t];
+                                t = t - 1;
+                            }
+                            printf("here output %s\n", buffer);
+                        }
 						break;
 					case 15:/* 输出换行符 */
 						printf("\n");
@@ -2677,6 +2696,9 @@ void interpret()
                 else if(i.l == 0 && i.a == 0){
                     s[t - 2] = s[base(s[t],s, b) + s[t - 1] + s[t - 2]];
                     t = t - 2;
+                }else if(i.l >0 && i.a > 0){
+                    t = t + 1;
+                    s[t] = s[base(i.l, s, b) + i.a];
                 }else{
 				    t = t + 1;
 				    s[t] = s[base(i.l,s,b) + i.a];				
@@ -2695,13 +2717,18 @@ void interpret()
                     s[base(s[t - 1], s, b) + s[t - 2] + s[t - 3]] = s[t];
                     t = t - 4;
                 }else if(i.l > 0 && i.a == 0){
-                    s[base(s[t], s, b) + s[t - 1] + s[t - 2]] = s[t - i.l];
+                    s[base(s[t], s, b) + s[t - 1] + s[t - 2]] = s[t - 2 - i.l + s[t - 2]];
+                    printf("t is %d,sto at : %d,  %d , %d \n",
+                            t,
+                            base(s[t], s, b) + s[t - 1] + s[t - 2],
+                            s[t - 2],
+                            s[t - 2 - i.l + s[t - 2]]);
                     t = t - 3;
                 }else{
 				    s[base(i.l, s, b) + i.a] = s[t];
 				    t = t - 1;
                 }
-                    printf("t is %d,sto at : %d  + %d , %d \n",t ,base(i.l, s, b), i.a, s[b  + i.a]);
+                    /* printf("t is %d,sto at : %d  + %d , %d \n",t ,base(i.l, s, b), i.a, s[b  + i.a]); */
 				break;
 			case cal:	/* 调用子过程 */
                 printf("now call , t at %d\n", t);

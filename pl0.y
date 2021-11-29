@@ -428,6 +428,7 @@ readstm: READ var_p SEMI
             }
             else{
                 gen(opr, table[$2].is_arry, 16);
+                printf("is_arry = %d \n" , table[$2].is_arry);
                 for(int i = 0; i < table[$2].is_arry; i++)
                 {
                     gen(lit, 0, i);
@@ -446,9 +447,17 @@ writestm:WRITE var_p SEMI
             gen(opr, 0, 14);   
             gen(opr, 0, 15);
         }else{
-            gen(lod, 0, 0);
-            gen(opr, 0, 14);   
-            gen(opr, 0, 15);
+            if(isString == 0){
+                gen(lod, 0, 0);
+                gen(opr, 0, 14);   
+                gen(opr, 0, 15);
+            }else{
+                int str_l = 0;
+                for(int i =0; i < table[$2].is_arry; i++){
+                    gen(lod, lev - table[$2].level, table[$2].adr + i);
+                }
+                gen(opr, table[$2].is_arry, 14);
+            }
         }
     }
     ;
@@ -783,9 +792,19 @@ void interpret()
 						s[t] = (s[t] <= s[t + 1]);
 						break;
 					case 14:/* 栈顶值输出 */
-						printf("%d", s[t]);
-						/* fprintf(fresult, "%d", s[t]); */
-						t = t - 1;
+                        if(i.l == 0){
+                            printf("%d", s[t]);
+                            /* fprintf(fresult, "%d", s[t]); */
+                            t = t - 1;
+                        }else if(i.l > 0){
+                            memset(buffer, 0, sizeof(buffer));
+                            for(int ii = 0; ii < i.l; ii++){
+                                printf("t is %d s[t]: %d \n", t ,s[t]);
+                                buffer[i.l - ii - 1] = s[t];
+                                t = t - 1;
+                            }
+                            printf("here output %s\n", buffer);
+                        }
 						break;
 					case 15:/* 输出换行符 */
 						printf("\n");
@@ -823,6 +842,9 @@ void interpret()
                 else if(i.l == 0 && i.a == 0){
                     s[t - 2] = s[base(s[t],s, b) + s[t - 1] + s[t - 2]];
                     t = t - 2;
+                }else if(i.l >0 && i.a > 0){
+                    t = t + 1;
+                    s[t] = s[base(i.l, s, b) + i.a];
                 }else{
 				    t = t + 1;
 				    s[t] = s[base(i.l,s,b) + i.a];				
@@ -841,13 +863,18 @@ void interpret()
                     s[base(s[t - 1], s, b) + s[t - 2] + s[t - 3]] = s[t];
                     t = t - 4;
                 }else if(i.l > 0 && i.a == 0){
-                    s[base(s[t], s, b) + s[t - 1] + s[t - 2]] = s[t - i.l];
+                    s[base(s[t], s, b) + s[t - 1] + s[t - 2]] = s[t - 2 - i.l + s[t - 2]];
+                    printf("t is %d,sto at : %d,  %d , %d \n",
+                            t,
+                            base(s[t], s, b) + s[t - 1] + s[t - 2],
+                            s[t - 2],
+                            s[t - 2 - i.l + s[t - 2]]);
                     t = t - 3;
                 }else{
 				    s[base(i.l, s, b) + i.a] = s[t];
 				    t = t - 1;
                 }
-                    printf("t is %d,sto at : %d  + %d , %d \n",t ,base(i.l, s, b), i.a, s[b  + i.a]);
+                    /* printf("t is %d,sto at : %d  + %d , %d \n",t ,base(i.l, s, b), i.a, s[b  + i.a]); */
 				break;
 			case cal:	/* 调用子过程 */
                 printf("now call , t at %d\n", t);
