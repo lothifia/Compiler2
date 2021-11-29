@@ -314,6 +314,7 @@ returnstm:
     RETURN 
     factor SEMI
     {
+        gen(sto, -1, 0);
         gen(opr, preVar_cnt, 0);
         --px;
     }
@@ -517,6 +518,7 @@ call_func:
         else{
             if($4 !=  table[$1].parameter_cnt ) yyerror("parameter number not match\n");
             gen(cal, 0, table[$1].adr);
+            if(table[$1].t != xvoid) gen(lod, -1, 0); /* get return */
         }
     }
     ;
@@ -703,16 +705,10 @@ void interpret()
 				switch (i.a)
 				{
 					case 0:  /* 函数调用结束后返回 */
-                    if(i.l != 0){
                         t = b - 1;
                         p = s[t + 3];
                         b = s[t + 2];
                         t -= i.l;
-                    }else{
-						t = b - 1;
-						p = s[t + 3];
-						b = s[t + 2];
-                    }
                         printf("return to t: %d p: %d b: %d \n *******\n", t, p, b);
 						break;
 					case 1: /* 栈顶元素取反 */
@@ -780,7 +776,11 @@ void interpret()
 				}
 				break;
 			case lod:	/* 取相对当前过程的数据基地址为a的内存的值到栈顶 */
-                if(i.l == 0 && i.a == 0){
+                if(i.l < 0){
+                    t = t + 1;
+                    s[t] = s[0];
+                }
+                else if(i.l == 0 && i.a == 0){
                     s[t - 2] = s[base(s[t],s, b) + s[t - 1] + s[t - 2]];
                     t = t - 2;
                 }else{
@@ -790,12 +790,14 @@ void interpret()
                     printf("t is %d,lod at : %d  + %d ,%d \n",t ,base(i.l, s, b), i.a, s[base(i.l, s,b) + i.a]);
 				break;
 			case sto:	/* 栈顶的值存到相对当前过程的数据基地址为a的内存 */
-                if(i.l < 0){
+                if(i.l < 0 && i.a != 0){
                     s[b + i.a] = s[b + i.l];   
                     printf("wa!!\n");
                     printf("i.l = %d, i.a = %d\n", i.l, i.a);
-                }
-                else if(i.l == 0 && i.a == 0){
+                }else if(i.l < 0 && i.a == 0){
+                    s[0] = s[t];
+                    printf("s[0] is %d \n", s[0]);
+                }else if(i.l == 0 && i.a == 0){
                     s[base(s[t - 1], s, b) + s[t - 2] + s[t - 3]] = s[t];
                     t = t - 4;
                 }else{

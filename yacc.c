@@ -674,12 +674,12 @@ static const yytype_int16 yyrline[] =
      157,   136,   163,   165,   166,   170,   172,   181,   194,   193,
      209,   214,   218,   217,   237,   240,   244,   247,   256,   268,
      269,   272,   273,   276,   285,   289,   297,   298,   301,   302,
-     303,   304,   305,   306,   307,   308,   311,   311,   321,   322,
-     324,   340,   342,   344,   349,   347,   370,   370,   374,   375,
-     377,   393,   392,   401,   400,   410,   416,   430,   434,   438,
-     442,   446,   450,   454,   457,   458,   462,   463,   467,   472,
-     473,   477,   482,   501,   505,   506,   510,   509,   524,   525,
-     527,   531,   536
+     303,   304,   305,   306,   307,   308,   311,   311,   322,   323,
+     325,   341,   343,   345,   350,   348,   371,   371,   375,   376,
+     378,   394,   393,   402,   401,   411,   417,   431,   435,   439,
+     443,   447,   451,   455,   458,   459,   463,   464,   468,   473,
+     474,   478,   483,   502,   506,   507,   511,   510,   526,   527,
+     529,   533,   538
 };
 #endif
 
@@ -1857,14 +1857,15 @@ yyreduce:
   case 47:
 #line 316 "pl0.y"
     {
+        gen(sto, -1, 0);
         gen(opr, preVar_cnt, 0);
         --px;
     }
-#line 1864 "yacc.c"
+#line 1865 "yacc.c"
     break;
 
   case 50:
-#line 326 "pl0.y"
+#line 327 "pl0.y"
     {
         if((yyvsp[-2].NUM) == 0){
             yyerror("Symbol not Exist\n");
@@ -1879,19 +1880,19 @@ yyreduce:
             }
         }
     }
-#line 1883 "yacc.c"
+#line 1884 "yacc.c"
     break;
 
   case 54:
-#line 349 "pl0.y"
+#line 350 "pl0.y"
     {
         gen(jpc, 0, 0);
     }
-#line 1891 "yacc.c"
+#line 1892 "yacc.c"
     break;
 
   case 55:
-#line 354 "pl0.y"
+#line 355 "pl0.y"
     {
         while(forx > 0)
         {
@@ -1907,11 +1908,11 @@ yyreduce:
         printf("jpc = %d\n", (yyvsp[-5].NUM));
         code[(yyvsp[-5].NUM)].a = cx;
     }
-#line 1911 "yacc.c"
+#line 1912 "yacc.c"
     break;
 
   case 60:
-#line 378 "pl0.y"
+#line 379 "pl0.y"
     {
         if((yyvsp[-2].NUM) == 0){
             yyerror("Symbol not Exist\n");
@@ -1925,51 +1926,51 @@ yyreduce:
 
         }
     }
-#line 1929 "yacc.c"
+#line 1930 "yacc.c"
     break;
 
   case 61:
-#line 393 "pl0.y"
+#line 394 "pl0.y"
     {
         gen(jpc,0,0);
     }
-#line 1937 "yacc.c"
+#line 1938 "yacc.c"
     break;
 
   case 62:
-#line 397 "pl0.y"
+#line 398 "pl0.y"
     {code[(yyvsp[-2].NUM)].a = cx;}
-#line 1943 "yacc.c"
+#line 1944 "yacc.c"
     break;
 
   case 63:
-#line 401 "pl0.y"
+#line 402 "pl0.y"
     {
         gen(jpc, 0, 0);
     }
-#line 1951 "yacc.c"
+#line 1952 "yacc.c"
     break;
 
   case 64:
-#line 405 "pl0.y"
+#line 406 "pl0.y"
     {
         gen(jmp, 0, (yyvsp[-5].NUM));
        code[(yyvsp[-2].NUM)].a = cx;
     }
-#line 1960 "yacc.c"
+#line 1961 "yacc.c"
     break;
 
   case 65:
-#line 411 "pl0.y"
+#line 412 "pl0.y"
     {
         gen(opr, 0, 16);
         gen(sto, lev - table[(yyvsp[-1].NUM)].level, table[(yyvsp[-1].NUM)].adr);
     }
-#line 1969 "yacc.c"
+#line 1970 "yacc.c"
     break;
 
   case 66:
-#line 417 "pl0.y"
+#line 418 "pl0.y"
     {
         if(table[(yyvsp[-1].NUM)].is_arry == 0){
             gen(lod, lev - table[(yyvsp[-1].NUM)].level,table[(yyvsp[-1].NUM)].adr);
@@ -1981,99 +1982,99 @@ yyreduce:
             gen(opr, 0, 15);
         }
     }
-#line 1985 "yacc.c"
+#line 1986 "yacc.c"
     break;
 
   case 67:
-#line 431 "pl0.y"
+#line 432 "pl0.y"
             {
                 gen(opr, 0, 8);
             }
-#line 1993 "yacc.c"
+#line 1994 "yacc.c"
     break;
 
   case 68:
-#line 435 "pl0.y"
+#line 436 "pl0.y"
             {
                 gen(opr, 0, 9);
             }
-#line 2001 "yacc.c"
+#line 2002 "yacc.c"
     break;
 
   case 69:
-#line 439 "pl0.y"
+#line 440 "pl0.y"
             {
                 gen(opr, 0, 10);
             }
-#line 2009 "yacc.c"
+#line 2010 "yacc.c"
     break;
 
   case 70:
-#line 443 "pl0.y"
+#line 444 "pl0.y"
             {
                 gen(opr, 0, 13);
             }
-#line 2017 "yacc.c"
+#line 2018 "yacc.c"
     break;
 
   case 71:
-#line 447 "pl0.y"
+#line 448 "pl0.y"
             {
                 gen(opr, 0, 12);
             }
-#line 2025 "yacc.c"
+#line 2026 "yacc.c"
     break;
 
   case 72:
-#line 451 "pl0.y"
+#line 452 "pl0.y"
             {
                 gen(opr, 0, 11);
             }
-#line 2033 "yacc.c"
+#line 2034 "yacc.c"
     break;
 
   case 75:
-#line 459 "pl0.y"
+#line 460 "pl0.y"
     {
         gen(opr, 0, 1);
     }
-#line 2041 "yacc.c"
+#line 2042 "yacc.c"
     break;
 
   case 77:
-#line 464 "pl0.y"
+#line 465 "pl0.y"
     {
         gen(opr, 0, 2);
     }
-#line 2049 "yacc.c"
+#line 2050 "yacc.c"
     break;
 
   case 78:
-#line 468 "pl0.y"
+#line 469 "pl0.y"
     {
         gen(opr, 0, 3);
     }
-#line 2057 "yacc.c"
+#line 2058 "yacc.c"
     break;
 
   case 80:
-#line 474 "pl0.y"
+#line 475 "pl0.y"
     {
         gen(opr, 0, 4);
     }
-#line 2065 "yacc.c"
+#line 2066 "yacc.c"
     break;
 
   case 81:
-#line 478 "pl0.y"
+#line 479 "pl0.y"
     {
         gen(opr, 0 , 5);
     }
-#line 2073 "yacc.c"
+#line 2074 "yacc.c"
     break;
 
   case 82:
-#line 483 "pl0.y"
+#line 484 "pl0.y"
     {
         if((yyvsp[0].NUM) == 0) yyerror("Symbol not found \n");
         else{
@@ -2092,74 +2093,75 @@ yyreduce:
             }
         }
     }
-#line 2096 "yacc.c"
+#line 2097 "yacc.c"
     break;
 
   case 83:
-#line 502 "pl0.y"
+#line 503 "pl0.y"
     {
         gen(lit, 0, (yyvsp[0].NUM));
     }
-#line 2104 "yacc.c"
+#line 2105 "yacc.c"
     break;
 
   case 86:
-#line 510 "pl0.y"
+#line 511 "pl0.y"
     {
         ++px;
         proctable[px] = (yyvsp[0].NUM);
     }
-#line 2113 "yacc.c"
+#line 2114 "yacc.c"
     break;
 
   case 87:
-#line 515 "pl0.y"
+#line 516 "pl0.y"
     {
         if(table[(yyvsp[-4].NUM)].kind != procedure) yyerror("Is  not a procedure \n");
         else{
             if((yyvsp[-1].NUM) !=  table[(yyvsp[-4].NUM)].parameter_cnt ) yyerror("parameter number not match\n");
             gen(cal, 0, table[(yyvsp[-4].NUM)].adr);
+            if(table[(yyvsp[-4].NUM)].t != xvoid) gen(lod, -1, 0); /* get return */
         }
     }
-#line 2125 "yacc.c"
+#line 2127 "yacc.c"
     break;
 
   case 88:
-#line 524 "pl0.y"
+#line 526 "pl0.y"
                     {(yyval.NUM) = 1;}
-#line 2131 "yacc.c"
+#line 2133 "yacc.c"
     break;
 
   case 89:
-#line 526 "pl0.y"
+#line 528 "pl0.y"
         {(yyval.NUM) = 1 + (yyvsp[0].NUM);}
-#line 2137 "yacc.c"
+#line 2139 "yacc.c"
     break;
 
   case 90:
-#line 527 "pl0.y"
+#line 529 "pl0.y"
       {(yyval.NUM) = 0;}
-#line 2143 "yacc.c"
+#line 2145 "yacc.c"
     break;
 
   case 91:
-#line 531 "pl0.y"
+#line 533 "pl0.y"
     {
         (yyval.NUM) = tx;
     }
-#line 2151 "yacc.c"
+#line 2153 "yacc.c"
     break;
 
   case 92:
-#line 536 "pl0.y"
+#line 538 "pl0.y"
     {
         (yyval.NUM) = cx;
     }
-#line 2159 "yacc.c"
+#line 2161 "yacc.c"
     break;
 
 
-#line 2163 "yacc.c"
+#line 2165 "yacc.c"
 
       default: break;
     }
@@ -2391,7 +2393,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 540 "pl0.y"
+#line 542 "pl0.y"
 
 
 yyerror(const char* s){
@@ -2558,16 +2560,10 @@ void interpret()
 				switch (i.a)
 				{
 					case 0:  /* 函数调用结束后返回 */
-                    if(i.l != 0){
                         t = b - 1;
                         p = s[t + 3];
                         b = s[t + 2];
                         t -= i.l;
-                    }else{
-						t = b - 1;
-						p = s[t + 3];
-						b = s[t + 2];
-                    }
                         printf("return to t: %d p: %d b: %d \n *******\n", t, p, b);
 						break;
 					case 1: /* 栈顶元素取反 */
@@ -2635,7 +2631,11 @@ void interpret()
 				}
 				break;
 			case lod:	/* 取相对当前过程的数据基地址为a的内存的值到栈顶 */
-                if(i.l == 0 && i.a == 0){
+                if(i.l < 0){
+                    t = t + 1;
+                    s[t] = s[0];
+                }
+                else if(i.l == 0 && i.a == 0){
                     s[t - 2] = s[base(s[t],s, b) + s[t - 1] + s[t - 2]];
                     t = t - 2;
                 }else{
@@ -2645,12 +2645,14 @@ void interpret()
                     printf("t is %d,lod at : %d  + %d ,%d \n",t ,base(i.l, s, b), i.a, s[base(i.l, s,b) + i.a]);
 				break;
 			case sto:	/* 栈顶的值存到相对当前过程的数据基地址为a的内存 */
-                if(i.l < 0){
+                if(i.l < 0 && i.a != 0){
                     s[b + i.a] = s[b + i.l];   
                     printf("wa!!\n");
                     printf("i.l = %d, i.a = %d\n", i.l, i.a);
-                }
-                else if(i.l == 0 && i.a == 0){
+                }else if(i.l < 0 && i.a == 0){
+                    s[0] = s[t];
+                    printf("s[0] is %d \n", s[0]);
+                }else if(i.l == 0 && i.a == 0){
                     s[base(s[t - 1], s, b) + s[t - 2] + s[t - 3]] = s[t];
                     t = t - 4;
                 }else{

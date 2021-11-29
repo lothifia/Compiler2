@@ -1,9 +1,12 @@
 int funca(int p, int c){
-	write p;
-    return p;
+    int tem;
+    tem = 3 * p;
+    return tem;
 }
 main{
     int a;
-    a = funca(5,12);
+    int a2;
+    a2 =23;
+    a = funca(a2,12);
     write a;
 }
