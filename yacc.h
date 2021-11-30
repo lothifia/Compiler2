@@ -54,35 +54,36 @@ extern int yydebug;
     CHAR = 260,
     INT = 261,
     VOID = 262,
-    Plus = 263,
-    Div = 264,
-    Minus = 265,
-    Mul = 266,
-    EQL = 267,
-    GEQ = 268,
-    LEQ = 269,
-    LSS = 270,
-    GTR = 271,
-    NEQ = 272,
-    END = 273,
-    LB = 274,
-    RB = 275,
-    LP = 276,
-    RP = 277,
-    MAIN = 278,
-    SEMI = 279,
-    COMMA = 280,
-    CONST = 281,
-    PROC = 282,
-    IF = 283,
-    ELSE = 284,
-    READ = 285,
-    WRITE = 286,
-    FOR = 287,
-    WHILE = 288,
-    LMB = 289,
-    RMB = 290,
-    RETURN = 291
+    STRING = 263,
+    Plus = 264,
+    Div = 265,
+    Minus = 266,
+    Mul = 267,
+    EQL = 268,
+    GEQ = 269,
+    LEQ = 270,
+    LSS = 271,
+    GTR = 272,
+    NEQ = 273,
+    END = 274,
+    LB = 275,
+    RB = 276,
+    LP = 277,
+    RP = 278,
+    MAIN = 279,
+    SEMI = 280,
+    COMMA = 281,
+    CONST = 282,
+    PROC = 283,
+    IF = 284,
+    ELSE = 285,
+    READ = 286,
+    WRITE = 287,
+    FOR = 288,
+    WHILE = 289,
+    LMB = 290,
+    RMB = 291,
+    RETURN = 292
   };
 #endif
 /* Tokens.  */
@@ -91,47 +92,48 @@ extern int yydebug;
 #define CHAR 260
 #define INT 261
 #define VOID 262
-#define Plus 263
-#define Div 264
-#define Minus 265
-#define Mul 266
-#define EQL 267
-#define GEQ 268
-#define LEQ 269
-#define LSS 270
-#define GTR 271
-#define NEQ 272
-#define END 273
-#define LB 274
-#define RB 275
-#define LP 276
-#define RP 277
-#define MAIN 278
-#define SEMI 279
-#define COMMA 280
-#define CONST 281
-#define PROC 282
-#define IF 283
-#define ELSE 284
-#define READ 285
-#define WRITE 286
-#define FOR 287
-#define WHILE 288
-#define LMB 289
-#define RMB 290
-#define RETURN 291
+#define STRING 263
+#define Plus 264
+#define Div 265
+#define Minus 266
+#define Mul 267
+#define EQL 268
+#define GEQ 269
+#define LEQ 270
+#define LSS 271
+#define GTR 272
+#define NEQ 273
+#define END 274
+#define LB 275
+#define RB 276
+#define LP 277
+#define RP 278
+#define MAIN 279
+#define SEMI 280
+#define COMMA 281
+#define CONST 282
+#define PROC 283
+#define IF 284
+#define ELSE 285
+#define READ 286
+#define WRITE 287
+#define FOR 288
+#define WHILE 289
+#define LMB 290
+#define RMB 291
+#define RETURN 292
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 98 "pl0.y"
+#line 99 "pl0.y"
 
     int NUM;
     char* VAR;
     char* OP;
 
-#line 135 "yacc.h"
+#line 137 "yacc.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

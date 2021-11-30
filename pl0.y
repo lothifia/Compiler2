@@ -40,6 +40,7 @@
     int pass_cnt;
     int isString;
     char buffer[strmax];
+    char temstr[strmax];
 
     enum fct 
     {
@@ -102,7 +103,7 @@
 }
 
 %token<NUM> num
-%token<VAR> var CHAR INT VOID
+%token<VAR> var CHAR INT VOID STRING
 %token<OP> Plus Div Minus Mul EQL GEQ LEQ LSS GTR NEQ
 %token END LB RB LP RP MAIN SEMI COMMA CONST PROC IF ELSE READ WRITE FOR WHILE LMB RMB RETURN
 %type<NUM> get_table_addr get_code_addr declaration_list VarInit Vardecl Vardef 
@@ -346,10 +347,22 @@ asgnstm:
         }
     }
     |var_p EQL STRING
-
+    {
+        printf("-----------qweqwcasdasdasd---------------\n");
+        strcpy(temstr, $3);
+        if(isString)
+        {
+            int teml = table[$1].is_arry;
+            for(int i = 0; i < teml; i++){
+                gen(lit, 0 , i);
+                gen(lit, 0, table[$1].adr);
+                gen(lit, 0, lev - table[$1].level);
+                gen(lit, 0, temstr[i]);
+                gen(sto, 0, 0);
+            }
+        }
+    }
     ;
-STRING:
-;
 callstm:
     ;
 forstm:

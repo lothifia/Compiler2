@@ -1,5 +1,5 @@
 main{
 	char str[10];
-	read str;
+str = "123\nfasf\n";
     write str;
 }
