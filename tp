@@ -3,11 +3,9 @@ int funcp()
 	return 1;
 }
 main{
-	char tem;
-	char str[12];
-	tem = "c";
-	str = "asdbb";
-write tem;
-write str[3];
+char str[10];
+str = "1234";
+str[2] = "b";
+write str[2];
 }
 

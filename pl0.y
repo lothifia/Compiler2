@@ -490,7 +490,7 @@ writestm:WRITE var_p SEMI
             gen(lod, lev - table[$2].level,table[$2].adr);
             gen(opr, 0, 14);   
             gen(opr, 0, 15);
-        }else if(table[$2].t == xchar){
+        }else if(table[$2].is_arry == 0 && table[$2].t == xchar){
             gen(lod, lev - table[$2].level,table[$2].adr);
             gen(opr, -1, 14);   
             gen(opr, 0, 15);

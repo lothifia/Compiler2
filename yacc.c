@@ -2040,7 +2040,7 @@ yyreduce:
             gen(lod, lev - table[(yyvsp[-1].NUM)].level,table[(yyvsp[-1].NUM)].adr);
             gen(opr, 0, 14);   
             gen(opr, 0, 15);
-        }else if(table[(yyvsp[-1].NUM)].t == xchar){
+        }else if(table[(yyvsp[-1].NUM)].is_arry == 0 && table[(yyvsp[-1].NUM)].t == xchar){
             gen(lod, lev - table[(yyvsp[-1].NUM)].level,table[(yyvsp[-1].NUM)].adr);
             gen(opr, -1, 14);   
             gen(opr, 0, 15);
