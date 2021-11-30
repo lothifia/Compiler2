@@ -1,5 +1,13 @@
 main{
+	int a;
+	int p[23];
+	int c;
 	char str[10];
-str = "123\nfasf\n";
-    write str;
+	str = "dasgbb";
+	for(a = 1; a < 3; a = a + 1)
+{
+
+	write str;
 }
+}
+

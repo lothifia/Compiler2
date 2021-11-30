@@ -306,7 +306,7 @@ statements :
     |
     ;
 statement:
-       asgnstm SEMI
+       asgnstm_semi
     |   callstm
     |   ifstm
     |   whilestm
@@ -315,6 +315,26 @@ statement:
     |   forstm
     |   returnstm
     ;
+asgnstm_semi: asgnstm_tot SEMI;
+
+asgnstm_tot: asgnstm get_sto
+    | asgnstm COMMA asgnstm_tot
+    ;
+get_sto:
+    {
+        while(forx > 0)
+        {
+            if(table[fortable[forx - 1]].is_arry){
+                gen(sto, 0, 0);
+                --forx;
+            }else{
+                gen(sto, lev - table[fortable[forx - 1]].level, table[fortable[forx - 1]].adr );
+                --forx;
+            }
+        }
+    }
+    ;
+
 returnstm:
     {
         if(table[proc_p].t == xvoid) yyerror("error void cannot return\n");
@@ -333,6 +353,7 @@ asgnstm:
     var_p 
     EQL expression
     {
+        /*
         if($1 == 0){
             yyerror("Symbol not Exist\n");
         }
@@ -343,6 +364,17 @@ asgnstm:
                 else{
                     gen(sto, 0, 0);
                 }
+            }
+        }
+        */
+        if($1 == 0){
+            yyerror("Symbol not Exist\n");
+        }
+        else{
+            if(table[$1].kind != variable) yyerror("Symbol not variable\n");
+            else{
+                fortable[forx] = $1;
+                ++forx;
             }
         }
     }
@@ -358,7 +390,8 @@ asgnstm:
                 gen(lit, 0, table[$1].adr);
                 gen(lit, 0, lev - table[$1].level);
                 gen(lit, 0, temstr[i]);
-                gen(sto, 0, 0);
+                fortable[forx] = $1;
+                ++forx;
             }
         }
     }
@@ -371,30 +404,20 @@ forstm:
     {
         gen(jpc, 0, 0);
     }
-    SEMI for_3 RP 
+    SEMI for_3 RP get_sto
     compstm
     {
-        while(forx > 0)
-        {
-            if(table[fortable[forx - 1]].is_arry){
-                gen(sto, 0, 0);
-                --forx;
-            }else{
-            gen(sto, lev - table[fortable[forx - 1]].level, table[fortable[forx - 1]].adr );
-            --forx;
-            }
-        }
         gen(jmp, 0, $5);
         printf("jpc = %d\n", $7);
         code[$7].a = cx;
     }
     ;
-for_1:  asgnstm |
+for_1:  asgnstm_tot |
     ;
 for_2: condition |
     ;
-for_3:  for_asgn
-    |   for_asgn COMMA for_3
+for_3:  asgnstm
+    |   asgnstm COMMA for_3
     ;
 for_asgn:var_p EQL expression
     {
@@ -462,7 +485,7 @@ writestm:WRITE var_p SEMI
         }else{
             if(isString == 0){
                 gen(lod, 0, 0);
-                gen(opr, 0, 14);   
+                gen(opr, -1, 14);   
                 gen(opr, 0, 15);
             }else{
                 int str_l = 0;
@@ -816,7 +839,11 @@ void interpret()
                                 buffer[i.l - ii - 1] = s[t];
                                 t = t - 1;
                             }
-                            printf("here output %s\n", buffer);
+                            printf("here output %s", buffer);
+                        }else if(i.l == -1){
+                            char c = s[t];
+                            t = t - 1;
+                            printf("%c", c);
                         }
 						break;
 					case 15:/* 输出换行符 */
