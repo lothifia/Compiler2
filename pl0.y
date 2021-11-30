@@ -290,7 +290,7 @@ var_p :var
     {
         isString = 0;
         $$ = position($1);
-        if(table[$$].t == xchar) isString = 1;
+        if(table[$$].t == xchar && table[$$].is_arry) isString = 1;
 
     }
     | var LMB factor RMB
@@ -380,8 +380,8 @@ asgnstm:
     }
     |var_p EQL STRING
     {
-        printf("-----------qweqwcasdasdasd---------------\n");
         strcpy(temstr, $3);
+        printf("-----------qweqwcasdasdasd---------------: %c  \n", temstr[0]);
         if(isString)
         {
             int teml = table[$1].is_arry;
@@ -393,6 +393,12 @@ asgnstm:
                 fortable[forx] = $1;
                 ++forx;
             }
+        } else{
+        printf("-----------qweqwcasdasdasd---------------: %c  \n", temstr[0]);
+            if(strlen(temstr) > 1) yyerror("not a char\n");
+            gen(lit, 0, temstr[0]);
+            fortable[forx] = $1;
+            ++forx;
         }
     }
     ;
@@ -404,8 +410,9 @@ forstm:
     {
         gen(jpc, 0, 0);
     }
-    SEMI for_3 RP get_sto
+    SEMI for_3 RP
     compstm
+    get_sto
     {
         gen(jmp, 0, $5);
         printf("jpc = %d\n", $7);
@@ -419,6 +426,7 @@ for_2: condition |
 for_3:  asgnstm
     |   asgnstm COMMA for_3
     ;
+/*
 for_asgn:var_p EQL expression
     {
         if($1 == 0){
@@ -433,7 +441,7 @@ for_asgn:var_p EQL expression
 
         }
     }
-
+*/
 ifstm: IF LP condition RP get_code_addr
     {
         gen(jpc,0,0);
@@ -478,11 +486,16 @@ readstm: READ var_p SEMI
     ;
 writestm:WRITE var_p SEMI
     {
-        if(table[$2].is_arry == 0){
+        if(table[$2].is_arry == 0 && table[$2].t != xchar){
             gen(lod, lev - table[$2].level,table[$2].adr);
             gen(opr, 0, 14);   
             gen(opr, 0, 15);
-        }else{
+        }else if(table[$2].t == xchar){
+            gen(lod, lev - table[$2].level,table[$2].adr);
+            gen(opr, -1, 14);   
+            gen(opr, 0, 15);
+        }
+        else{
             if(isString == 0){
                 gen(lod, 0, 0);
                 gen(opr, -1, 14);   
@@ -841,6 +854,7 @@ void interpret()
                             }
                             printf("here output %s", buffer);
                         }else if(i.l == -1){
+                            
                             char c = s[t];
                             t = t - 1;
                             printf("%c", c);
