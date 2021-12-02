@@ -1,11 +1,14 @@
 int funcp()
 {
+	int a;
+	a = 23;
 	return 1;
 }
 main{
-char str[10];
-str = "1234";
-str[2] = "b";
-write str[2];
+	int b;
+	int a;
+	char str[10];
+	read str;
+	write str;
 }
 

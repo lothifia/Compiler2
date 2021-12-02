@@ -1,0 +1,7 @@
+    1 proc  funcp lev=0 addr=1 size=0
+    2 var   a lev=0 addr=3
+    3 proc  main lev=0 addr=8 size=0
+    4 var   b lev=0 addr=3
+    5 var   a lev=0 addr=4
+    6 var   str lev=0 addr=5
+

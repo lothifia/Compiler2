@@ -13,7 +13,7 @@
     #include<string.h>
     #include<stdbool.h>
     FILE* fin;
-    FILE* foutput;
+    FILE* fresult;
     FILE* ftable;
     char fname[al];
     
@@ -93,8 +93,10 @@
     void listall();
     void interpret();
     int base(int l, int* s, int b);
-
-
+    void yyerror(const char* s);
+    int position(char* a);
+    int yylex();
+    void redirectInput(FILE *input);
 %}
 %union{
     int NUM;
@@ -501,7 +503,6 @@ writestm:WRITE var_p SEMI
                 gen(opr, -1, 14);   
                 gen(opr, 0, 15);
             }else{
-                int str_l = 0;
                 for(int i =0; i < table[$2].is_arry; i++){
                     gen(lod, lev - table[$2].level, table[$2].adr + i);
                 }
@@ -624,7 +625,7 @@ get_code_addr:
     ;
 %%
 
-yyerror(const char* s){
+void yyerror(const char* s){
     printf("error!:%s\n, located at %d line\n", s, line);
 }
 void init()
@@ -716,8 +717,8 @@ void listall()
     for (i = 0; i < cx; i++)
     {
         printf("%d %s %d %d\n", i, name[code[i].f], code[i].l, code[i].a);
-        /* fprintf(fcode,"%d %s %d %d\n", i, name[code[i].f], code[i].l, code[i].a);
-        */
+        fprintf(fresult,"%d %s %d %d\n", i, name[code[i].f], code[i].l, code[i].a);
+
         
     }
 }
@@ -735,30 +736,27 @@ void displaytable()
 				case constant:
 					printf("    %d const %s ", i, table[i].name);
 					printf("val=%d\n", table[i].val);
-					/* fprintf(ftable, "    %d const %s ", i, table[i].name);
-					fprintf(ftable, "val=%d\n", table[i].val); */
+					fprintf(ftable, "    %d const %s ", i, table[i].name);
+					fprintf(ftable, "val=%d\n", table[i].val);
 					break;
 				case variable:
 					printf("    %d var   %s ", i, table[i].name);
 					printf("lev=%d addr=%d ", table[i].level, table[i].adr);
                     if(table[i].t == xint) printf("type = int \n");
                     else printf("type = char \n");
-					/* fprintf(ftable, "    %d var   %s ", i, table[i].name);
+					fprintf(ftable, "    %d var   %s ", i, table[i].name);
 					fprintf(ftable, "lev=%d addr=%d\n", table[i].level, table[i].adr);
-                    */
 					break;
 				case procedure:
 					printf("    %d proc  %s ", i, table[i].name);
 					printf("lev=%d addr=%d size=%d\n", table[i].level, table[i].adr, table[i].size);
-                    /*
 					fprintf(ftable,"    %d proc  %s ", i, table[i].name);
 					fprintf(ftable,"lev=%d addr=%d size=%d\n", table[i].level, table[i].adr, table[i].size);
-                    */
 					break;
 			}
 		}
 		printf("\n");
-		/* fprintf(ftable, "\n"); */
+		fprintf(ftable, "\n");
 }
 void interpret()
 {
@@ -769,7 +767,7 @@ void interpret()
 	int s[stacksize];	/* 栈 */
 
 	printf("Start pl0\n");
-	/* fprintf(fresult,"Start pl0\n"); */
+	fprintf(fresult,"Start pl0\n");
 	s[0] = 0; /* s[0]不用 */
 	s[1] = 0; /* 主程序的三个联系单元均置为0 */
 	s[2] = 0;
@@ -843,7 +841,7 @@ void interpret()
 					case 14:/* 栈顶值输出 */
                         if(i.l == 0){
                             printf("%d", s[t]);
-                            /* fprintf(fresult, "%d", s[t]); */
+                            fprintf(fresult, "%d", s[t]);
                             t = t - 1;
                         }else if(i.l > 0){
                             memset(buffer, 0, sizeof(buffer));
@@ -862,7 +860,7 @@ void interpret()
 						break;
 					case 15:/* 输出换行符 */
 						printf("\n");
-					    /* fprintf(fresult,"\n"); */
+					    fprintf(fresult,"\n"); 
 						break;
 					case 16:/* 读入一个输入置于栈顶 */
                         if(i.l == 0){
@@ -873,9 +871,7 @@ void interpret()
                             /* fprintf(fresult, "%d\n", s[t]); */						
                         }else{
                             printf("? (need a string)");
-                            scanf("%s", &buffer);
-                            int buffer_len = strlen(buffer);
-
+                            scanf("%s", buffer);
                             printf("i.l %d, t %d \n", i.l, t);
                             for(int cnt_i = 0; cnt_i < i.l; cnt_i++){
                                 printf("t %d, buffer %d \n", t, buffer[cnt_i]);
@@ -954,7 +950,7 @@ void interpret()
 		}
 	} while (p != 0);
 	printf("End pl0\n");
-	/*fprintf(fresult,"End pl0\n");*/
+	fprintf(fresult,"End pl0\n");
 }
 int base(int l, int* s, int b)
 {
@@ -975,7 +971,7 @@ int main(){
         printf("open file error!\n");
         exit(1);
     }
-    /* if ((foutput = fopen("foutput.txt", "w")) == NULL)
+    if ((fresult = fopen("fresult.txt", "w")) == NULL)
     {
 		printf("Can't open the output file!\n");
 		exit(1);
@@ -985,17 +981,17 @@ int main(){
 		printf("Can't open ftable.txt file!\n");
 		exit(1);
 	}
-    */
+    
     redirectInput(fin);
     init();
-
     yyparse();
     displaytable();
     listall();
     interpret();
+
     fclose(fin);
-    /* fclose(ftable);
-    fclose(foutput);
-    */
+    fclose(ftable);
+    fclose(fresult);
+
     return 0;
 }
