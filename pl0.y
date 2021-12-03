@@ -13,8 +13,10 @@
     #include<string.h>
     #include<stdbool.h>
     FILE* fin;
-    FILE* fresult;
-    FILE* ftable;
+    FILE* fresult = NULL;
+    FILE* ftable = NULL;
+    FILE* fbug = NULL;
+    FILE* fpcode = NULL;
     char fname[al];
     
     int tx;/*table */
@@ -27,8 +29,12 @@
     int err;
     int c_num;/* use to record const */
     int fortable[cxmax];
-    int foroffset[cxmax];
     int forx;
+
+    int for_var;
+    int for_lev[10];
+    int for_lx;
+
     int vartable[cxmax];
     int  varx;
     int total_var;
@@ -109,7 +115,7 @@
 %token<OP> Plus Div Minus Mul EQL GEQ LEQ LSS GTR NEQ
 %token END LB RB LP RP MAIN SEMI COMMA CONST PROC IF ELSE READ WRITE FOR WHILE LMB RMB RETURN
 %type<NUM> get_table_addr get_code_addr declaration_list VarInit Vardecl Vardef 
-%type<NUM> block var_p var_t prevardecl prevardef pass_factor
+%type<NUM> block var_p var_t prevardecl prevardef pass_factor for_3
 %type statement VarInit Vardef condition STRING defunc
 
 %%
@@ -317,14 +323,14 @@ statement:
     |   forstm
     |   returnstm
     ;
-asgnstm_semi: asgnstm_tot SEMI;
+asgnstm_semi: asgnstm_tot get_sto SEMI;
 
-asgnstm_tot: asgnstm get_sto
+asgnstm_tot: asgnstm
     | asgnstm COMMA asgnstm_tot
     ;
 get_sto:
     {
-        while(forx > 0)
+        while(forx > for_var)
         {
             if(table[fortable[forx - 1]].is_arry){
                 gen(sto, 0, 0);
@@ -412,8 +418,16 @@ forstm:
     {
         gen(jpc, 0, 0);
     }
-    SEMI for_3 RP
-    compstm
+    SEMI for_3
+    {
+        for_var += $10;
+        for_lev[for_lx] = $10;
+        ++for_lx;
+    }
+    RP compstm 
+    {
+        for_var -= for_lev[--for_lx];
+    }
     get_sto
     {
         gen(jmp, 0, $5);
@@ -421,29 +435,13 @@ forstm:
         code[$7].a = cx;
     }
     ;
-for_1:  asgnstm_tot |
+for_1:  asgnstm_tot get_sto|
     ;
 for_2: condition |
     ;
-for_3:  asgnstm
-    |   asgnstm COMMA for_3
+for_3:  asgnstm { $$ = 1; }
+    |   asgnstm COMMA for_3 {$$ = 1 + $3;}
     ;
-/*
-for_asgn:var_p EQL expression
-    {
-        if($1 == 0){
-            yyerror("Symbol not Exist\n");
-        }
-        else{
-            if(table[$1].kind != variable) yyerror("Symbol not variable\n");
-            else{
-                fortable[forx] = $1;
-                forx ++;
-            }
-
-        }
-    }
-*/
 ifstm: IF LP condition RP get_code_addr
     {
         gen(jpc,0,0);
@@ -498,9 +496,13 @@ writestm:WRITE var_p SEMI
             gen(opr, 0, 15);
         }
         else{
-            if(isString == 0){
+            if(isString == 0 && table[$2].t == xchar){
                 gen(lod, 0, 0);
                 gen(opr, -1, 14);   
+                gen(opr, 0, 15);
+            }else if(isString == 0 && table[$2].t == xint){
+                gen(lod, 0, 0);
+                gen(opr, 0, 14);
                 gen(opr, 0, 15);
             }else{
                 for(int i =0; i < table[$2].is_arry; i++){
@@ -635,13 +637,14 @@ void init()
 	px = 0;
     forx = 0;
     varx = 0;
-  lev = 0;   
-  proctable[0] = 0;
-  c_num = 0;
-  err = 0;
-  total_var = 0;
-
-  offset = 0;
+    lev = 0;   
+    proctable[0] = 0;
+    c_num = 0;
+    err = 0;
+    total_var = 0;
+    for_var = 0;
+    for_lx = 0;
+    offset = 0;
 }
 int position(char* a)
 {
@@ -717,7 +720,7 @@ void listall()
     for (i = 0; i < cx; i++)
     {
         printf("%d %s %d %d\n", i, name[code[i].f], code[i].l, code[i].a);
-        fprintf(fresult,"%d %s %d %d\n", i, name[code[i].f], code[i].l, code[i].a);
+        fprintf(fpcode,"%d %s %d %d\n", i, name[code[i].f], code[i].l, code[i].a);
 
         
     }
@@ -981,6 +984,16 @@ int main(){
 		printf("Can't open ftable.txt file!\n");
 		exit(1);
 	}
+	if ((fpcode = fopen("fpcode.txt", "w")) == NULL)
+	{
+		printf("Can't open ftable.txt file!\n");
+		exit(1);
+	}
+	if ((fbug = fopen("fbug.txt", "w")) == NULL)
+	{
+		printf("Can't open ftable.txt file!\n");
+		exit(1);
+	}
     
     redirectInput(fin);
     init();
@@ -992,6 +1005,8 @@ int main(){
     fclose(fin);
     fclose(ftable);
     fclose(fresult);
+    fclose(fpcode);
+    fclose(fbug);
 
     return 0;
 }

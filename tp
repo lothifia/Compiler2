@@ -1,14 +1,13 @@
-int funcp()
-{
-	int a;
-	a = 23;
-	return 1;
-}
 main{
+	int l[10];
+	int i;
 	int b;
-	int a;
-	char str[10];
-	read str;
-	write str;
+	for(i = 0; i < 2; i = i + 1){
+		for(b = 1; b< 3; b = b+ 1){
+			l[b] = b;
+			write l[b];
+		}
+		write l[i];
+	}
 }
 
