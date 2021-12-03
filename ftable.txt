@@ -1,3 +1,2 @@
     1 proc  main lev=0 addr=1 size=0
-    2 var   i lev=0 addr=3
 

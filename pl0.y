@@ -521,6 +521,11 @@ writestm:WRITE var_p SEMI
             }
         }
     }
+    | WRITE expression SEMI
+    {
+        gen(opr, 0, 14);
+        gen(opr, 0, 15);
+    }
     ;
 
 condition: expression EQL expression
