@@ -446,10 +446,19 @@ ifstm: IF LP condition RP get_code_addr
     {
         gen(jpc,0,0);
     }
-    compstm
-    {code[$5].a = cx;}
+    compstm get_code_addr
+    {
+        gen(jmp, 0, 0);
+        code[$5].a = cx;
+    }
+    elsestm 
+    {
+        code[$8].a = cx;
+    }
     ;
-
+elsestm: ELSE compstm 
+    |
+    ;
 whilestm: WHILE LP get_code_addr condition RP get_code_addr
     {
         gen(jpc, 0, 0);
