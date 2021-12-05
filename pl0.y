@@ -137,8 +137,11 @@ procstart:
         code[$1].a = cx;
         proctable[px] = tx;
 
-    }
+    } get_table_addr
     LB block RB
+    {
+        table[$6].size =  preVar_cnt;
+    }
     ;
 
 var_t: INT {$$ = 1;}| CHAR {$$ = 2;}| VOID {$$ = 3;}
@@ -167,6 +170,7 @@ defunc:
     }
     LB block RB 
     {
+        table[$4].size = preVar_cnt;
         preVar_cnt = 0;
         total_var = 0;
         proc_p = 0;
@@ -214,6 +218,7 @@ block:
     statements
     {
         gen(opr, preVar_cnt, 0);
+        preVar_cnt = $1 + preVar_cnt;
     }
     ;
 
@@ -348,7 +353,7 @@ returnstm:
         if(table[proc_p].t == xvoid) yyerror("error void cannot return\n");
     }
     RETURN 
-    factor SEMI
+    expression SEMI
     {
         gen(sto, -1, 0);
         gen(opr, preVar_cnt, 0);
@@ -921,11 +926,8 @@ void interpret()
 			case sto:	/* 栈顶的值存到相对当前过程的数据基地址为a的内存 */
                 if(i.l < 0 && i.a != 0){
                     s[b + i.a] = s[b + i.l];   
-                    printf("wa!!\n");
-                    printf("i.l = %d, i.a = %d\n", i.l, i.a);
                 }else if(i.l < 0 && i.a == 0){
                     s[0] = s[t];
-                    printf("s[0] is %d \n", s[0]);
                 }else if(i.l == 0 && i.a == 0){
                     s[base(s[t - 1], s, b) + s[t - 2] + s[t - 3]] = s[t];
                     t = t - 4;
