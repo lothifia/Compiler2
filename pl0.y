@@ -6,7 +6,7 @@
     #include<string.h>
     #include<stdbool.h>
     #include "head.h"
-    
+
     FILE* fin;
     FILE* fresult = NULL;
     FILE* ftable = NULL;
@@ -36,7 +36,7 @@
 %token<NUM> num
 %token<VAR> var CHAR INT VOID STRING
 %token<OP> Plus Div Minus Mul EQL GEQ LEQ LSS GTR NEQ
-%token END LB RB LP RP MAIN SEMI COMMA CONST PROC IF ELSE READ WRITE FOR WHILE LMB RMB RETURN
+%token END LB RB LP RP MAIN SEMI_t COMMA CONST PROC IF ELSE READ WRITE FOR WHILE LMB RMB RETURN
 %type<NUM> get_table_addr get_code_addr declaration_list VarInit Vardecl Vardef 
 %type<NUM> block var_p var_t prevardecl prevardef pass_factor for_3
 %type statement VarInit Vardef condition STRING defunc
@@ -567,10 +567,15 @@ get_code_addr:
         $$ = cx;
     }
     ;
+SEMI: SEMI_t
+    |
+    {
+        yyerror("miss a SEMICOM");
+    }
 %%
 
 void yyerror(const char* s){
-    printf("error!:%s\n, located at %d line\n", s, line);
+    fprintf(fbug,"error!:%s , located at %d line\n", s, line);
 }
 void init()
 {
@@ -906,6 +911,7 @@ int base(int l, int* s, int b)
 }
 
 int main(){
+    line = 0;
     printf("Input file        ");
     scanf("%s", fname);
     if((fin = fopen(fname, "r")) == NULL)

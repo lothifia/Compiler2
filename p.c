@@ -936,7 +936,7 @@ YY_RULE_SETUP
 case 30:
 YY_RULE_SETUP
 #line 57 "pl0.l"
-{return SEMI;}
+{return SEMI_t;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP

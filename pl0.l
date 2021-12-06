@@ -54,7 +54,7 @@ dev [/]
 "-" {return Minus;}
 "*" { return Mul;}
 [/] { return Div;}
-[;] {return SEMI;}
+[;] {return SEMI_t;}
 [,] {return COMMA;}
 {strb} {
         int c;

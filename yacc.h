@@ -71,7 +71,7 @@ extern int yydebug;
     LP = 277,
     RP = 278,
     MAIN = 279,
-    SEMI = 280,
+    SEMI_t = 280,
     COMMA = 281,
     CONST = 282,
     PROC = 283,
@@ -109,7 +109,7 @@ extern int yydebug;
 #define LP 277
 #define RP 278
 #define MAIN 279
-#define SEMI 280
+#define SEMI_t 280
 #define COMMA 281
 #define CONST 282
 #define PROC 283
