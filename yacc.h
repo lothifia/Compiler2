@@ -127,7 +127,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 107 "pl0.y"
+#line 30 "pl0.y"
 
     int NUM;
     char* VAR;
