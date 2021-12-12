@@ -36,7 +36,7 @@
 %token<NUM> num
 %token<VAR> var CHAR INT VOID STRING
 %token<OP> Plus Div Minus Mul EQL GEQ LEQ LSS GTR NEQ
-%token END LB RB LP RP MAIN SEMI_t COMMA CONST PROC IF ELSE READ WRITE FOR WHILE LMB RMB RETURN
+%token END LB RB LP RP MAIN SEMI_t COMMA CONST PROC IF ELSE READ WRITE FOR WHILE LMB RMB RETURN PP DD RED
 %type<NUM> get_table_addr get_code_addr declaration_list VarInit Vardecl Vardef 
 %type<NUM> block var_p var_t prevardecl prevardef pass_factor for_3
 %type statement VarInit Vardef condition STRING defunc
@@ -264,7 +264,7 @@ get_sto:
                 gen(sto, 0, 0);
                 --forx;
             }else{
-                gen(sto, lev - table[fortable[forx - 1]].level, table[fortable[forx - 1]].adr );
+                gen(sto, lev - table[fortable[forx - 1]].level, table[fortable[forx - 1]].adr);
                 --forx;
             }
         }
@@ -337,6 +337,7 @@ asgnstm:
             ++forx;
         }
     }
+    |var_p
     ;
 callstm:
     ;
@@ -394,6 +395,7 @@ whilestm: WHILE LP get_code_addr condition RP get_code_addr
      compstm 
     {
         gen(jmp, 0, $3);
+        printf("now cx: %d----------------------------------------", cx);
        code[$6].a = cx;
     }
     ;
@@ -507,6 +509,10 @@ term: factor
     {
         gen(opr, 0 , 5);
     }
+    |   expression RED expression
+        {
+            gen(opr, 0, 17);
+        }
     ;
 factor: var_p
     {
@@ -567,7 +573,7 @@ get_code_addr:
         $$ = cx;
     }
     ;
-SEMI: SEMI_t
+SEMI: SEMI_t get_sto
     |
     {
         yyerror("miss a SEMICOM");
@@ -829,9 +835,12 @@ void interpret()
                                 s[t] = buffer[cnt_i];
                             }
                         }
+                        break;
+                    case 17:
+                        t = t - 1;
+                        s[t] = s[t] % s[t + 1];
 
 						break;
-
 				}
 				break;
 			case lod:	/* 取相对当前过程的数据基地址为a的内存的值到栈顶 */
@@ -849,7 +858,7 @@ void interpret()
 				    t = t + 1;
 				    s[t] = s[base(i.l,s,b) + i.a];				
                 }
-                    printf("t is %d,lod at : %d  + %d ,%d \n",t ,base(i.l, s, b), i.a, s[base(i.l, s,b) + i.a]);
+                    /* printf("t is %d,lod at : %d  + %d ,%d \n",t ,base(i.l, s, b), i.a, s[base(i.l, s,b) + i.a]); */
 				break;
 			case sto:	/* 栈顶的值存到相对当前过程的数据基地址为a的内存 */
                 if(i.l < 0 && i.a != 0){

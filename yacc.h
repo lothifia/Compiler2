@@ -83,7 +83,10 @@ extern int yydebug;
     WHILE = 289,
     LMB = 290,
     RMB = 291,
-    RETURN = 292
+    RETURN = 292,
+    PP = 293,
+    DD = 294,
+    RED = 295
   };
 #endif
 /* Tokens.  */
@@ -122,6 +125,9 @@ extern int yydebug;
 #define LMB 290
 #define RMB 291
 #define RETURN 292
+#define PP 293
+#define DD 294
+#define RED 295
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -133,7 +139,7 @@ union YYSTYPE
     char* VAR;
     char* OP;
 
-#line 137 "yacc.h"
+#line 143 "yacc.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

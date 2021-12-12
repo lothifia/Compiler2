@@ -49,6 +49,7 @@ dev [/]
 "<=" {return LEQ;}
 ">" {return GTR;}
 "<" {return LSS;}
+"%" {printf("get %%%%%%%%%%%%%%%%%%\n") ;return RED;}
 "=" { return EQL;}
 "+" { return Plus;}
 "-" {return Minus;}
