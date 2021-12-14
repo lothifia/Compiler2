@@ -1,6 +1,5 @@
-    1 proc  main lev=0 addr=1 size=4
-    2 var   n lev=0 addr=3
-    3 var   i lev=0 addr=4
-    4 var   j lev=0 addr=5
-    5 var   flag lev=0 addr=6
+    1 proc  main lev=0 addr=1 size=3
+    2 var   a lev=0 addr=3
+    3 var   b lev=0 addr=15
+    4 var   c lev=0 addr=16
 

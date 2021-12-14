@@ -26,6 +26,7 @@
     int position(char* a);
     int yylex();
     void redirectInput(FILE *input);
+                        char get_void;
 %}
 %union{
     int NUM;
@@ -402,8 +403,13 @@ whilestm: WHILE LP get_code_addr condition RP get_code_addr
 readstm: READ var_p SEMI
     {
         if(table[$2].is_arry == 0){
+            if(table[$2].t == xchar){
+                gen(opr, -1, 16);
+                gen(sto, lev - table[$2].level, table[$2].adr);
+            }else{
             gen(opr, 0, 16);
             gen(sto, lev - table[$2].level, table[$2].adr);
+            }
         }else {
             if(isString == 0) {
                 gen(opr, 0, 16);
@@ -436,6 +442,7 @@ writestm:WRITE var_p SEMI
         }
         else{
             if(isString == 0 && table[$2].t == xchar){
+                printf("asdfhoasdgjlasdkjglasdjfl");
                 gen(lod, 0, 0);
                 gen(opr, -1, 14);   
                 gen(opr, 0, 15);
@@ -806,7 +813,7 @@ void interpret()
                                 buffer[i.l - ii - 1] = s[t];
                                 t = t - 1;
                             }
-                            printf("here output %s", buffer);
+                            printf("here output %s\n", buffer);
                         }else if(i.l == -1){
                             
                             char c = s[t];
@@ -825,6 +832,10 @@ void interpret()
                             /* fprintf(fresult, "?"); */
                             scanf("%d", &(s[t]));
                             /* fprintf(fresult, "%d\n", s[t]); */						
+                        }else if(i.l < 0){
+                            t = t + 1;
+                            printf("?");
+                            scanf("%c", &(s[t]));
                         }else{
                             printf("? (need a string)");
                             scanf("%s", buffer);
@@ -835,6 +846,7 @@ void interpret()
                                 s[t] = buffer[cnt_i];
                             }
                         }
+                        getchar();
                         break;
                     case 17:
                         t = t - 1;
@@ -923,6 +935,7 @@ int main(){
     line = 0;
     printf("Input file        ");
     scanf("%s", fname);
+    getchar();
     if((fin = fopen(fname, "r")) == NULL)
     {
         printf("open file error!\n");

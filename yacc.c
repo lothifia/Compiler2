@@ -95,8 +95,9 @@
     int position(char* a);
     int yylex();
     void redirectInput(FILE *input);
+                        char get_void;
 
-#line 100 "yacc.c"
+#line 101 "yacc.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -228,13 +229,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 30 "pl0.y"
+#line 31 "pl0.y"
 
     int NUM;
     char* VAR;
     char* OP;
 
-#line 238 "yacc.c"
+#line 239 "yacc.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -613,17 +614,17 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    48,    48,    54,    47,    70,    70,    70,    75,    88,
-      95,    74,   102,   104,   105,   109,   111,   120,   133,   132,
-     149,   154,   158,   157,   177,   180,   184,   187,   196,   208,
-     209,   212,   213,   216,   225,   232,   241,   242,   245,   246,
-     247,   248,   249,   250,   251,   252,   254,   256,   257,   260,
-     275,   275,   286,   287,   289,   317,   340,   342,   347,   351,
-     357,   345,   367,   367,   371,   372,   375,   379,   374,   388,
-     389,   392,   391,   402,   426,   454,   461,   465,   469,   473,
-     477,   481,   485,   488,   489,   493,   494,   498,   503,   504,
-     508,   512,   517,   536,   540,   541,   545,   544,   560,   561,
-     563,   567,   572,   576,   578
+       0,    49,    49,    55,    48,    71,    71,    71,    76,    89,
+      96,    75,   103,   105,   106,   110,   112,   121,   134,   133,
+     150,   155,   159,   158,   178,   181,   185,   188,   197,   209,
+     210,   213,   214,   217,   226,   233,   242,   243,   246,   247,
+     248,   249,   250,   251,   252,   253,   255,   257,   258,   261,
+     276,   276,   287,   288,   290,   318,   341,   343,   348,   352,
+     358,   346,   368,   368,   372,   373,   376,   380,   375,   389,
+     390,   393,   392,   403,   432,   461,   468,   472,   476,   480,
+     484,   488,   492,   495,   496,   500,   501,   505,   510,   511,
+     515,   519,   524,   543,   547,   548,   552,   551,   567,   568,
+     570,   574,   579,   583,   585
 };
 #endif
 
@@ -1546,16 +1547,16 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 48 "pl0.y"
+#line 49 "pl0.y"
     {
         preVar_cnt = 0;
         gen(jmp, 0, 0);
     }
-#line 1555 "yacc.c"
+#line 1556 "yacc.c"
     break;
 
   case 3:
-#line 54 "pl0.y"
+#line 55 "pl0.y"
     {
         /* Main procedure */
         strcpy(id, "main");
@@ -1566,37 +1567,37 @@ yyreduce:
         proctable[px] = tx;
 
     }
-#line 1570 "yacc.c"
+#line 1571 "yacc.c"
     break;
 
   case 4:
-#line 65 "pl0.y"
+#line 66 "pl0.y"
     {
         table[(yyvsp[-3].NUM)].size =  preVar_cnt;
     }
-#line 1578 "yacc.c"
+#line 1579 "yacc.c"
     break;
 
   case 5:
-#line 70 "pl0.y"
+#line 71 "pl0.y"
            {(yyval.NUM) = 1;}
-#line 1584 "yacc.c"
+#line 1585 "yacc.c"
     break;
 
   case 6:
-#line 70 "pl0.y"
+#line 71 "pl0.y"
                            {(yyval.NUM) = 2;}
-#line 1590 "yacc.c"
+#line 1591 "yacc.c"
     break;
 
   case 7:
-#line 70 "pl0.y"
+#line 71 "pl0.y"
                                            {(yyval.NUM) = 3;}
-#line 1596 "yacc.c"
+#line 1597 "yacc.c"
     break;
 
   case 8:
-#line 75 "pl0.y"
+#line 76 "pl0.y"
     {
         strcpy(id, (yyvsp[0].VAR));
         _enter(procedure, 0);
@@ -1609,53 +1610,53 @@ yyreduce:
         }
         proc_p = tx;
     }
-#line 1613 "yacc.c"
+#line 1614 "yacc.c"
     break;
 
   case 9:
-#line 88 "pl0.y"
+#line 89 "pl0.y"
     {
         table[(yyvsp[-4].NUM)].adr = (yyvsp[-3].NUM);
         table[(yyvsp[-4].NUM)].parameter_cnt = (yyvsp[-1].NUM);
         printf("pcnt = %d, table addr is %d\n", (yyvsp[-1].NUM), (yyvsp[-3].NUM));
         preVar_cnt = (yyvsp[-1].NUM);
     }
-#line 1624 "yacc.c"
+#line 1625 "yacc.c"
     break;
 
   case 10:
-#line 95 "pl0.y"
+#line 96 "pl0.y"
     {
         table[(yyvsp[-8].NUM)].size = preVar_cnt;
         preVar_cnt = 0;
         total_var = 0;
         proc_p = 0;
     }
-#line 1635 "yacc.c"
+#line 1636 "yacc.c"
     break;
 
   case 13:
-#line 104 "pl0.y"
+#line 105 "pl0.y"
                       { (yyval.NUM) = (yyvsp[0].NUM) ; }
-#line 1641 "yacc.c"
+#line 1642 "yacc.c"
     break;
 
   case 14:
-#line 106 "pl0.y"
+#line 107 "pl0.y"
     {
         (yyval.NUM) = (yyvsp[-2].NUM) + (yyvsp[0].NUM);
     }
-#line 1649 "yacc.c"
+#line 1650 "yacc.c"
     break;
 
   case 15:
-#line 109 "pl0.y"
+#line 110 "pl0.y"
       { (yyval.NUM) = 0 ;}
-#line 1655 "yacc.c"
+#line 1656 "yacc.c"
     break;
 
   case 16:
-#line 112 "pl0.y"
+#line 113 "pl0.y"
     {
         strcpy(id, (yyvsp[0].VAR));
         _enter(variable, 0);
@@ -1664,11 +1665,11 @@ yyreduce:
         total_var ++;
         (yyval.NUM) = 1;
     }
-#line 1668 "yacc.c"
+#line 1669 "yacc.c"
     break;
 
   case 17:
-#line 121 "pl0.y"
+#line 122 "pl0.y"
     {
         (yyval.NUM) = 1;
         strcpy(id, (yyvsp[-3].VAR));
@@ -1678,11 +1679,11 @@ yyreduce:
         total_var += (yyvsp[-1].NUM);
         (yyval.NUM) = 1;
     }
-#line 1682 "yacc.c"
+#line 1683 "yacc.c"
     break;
 
   case 18:
-#line 133 "pl0.y"
+#line 134 "pl0.y"
     {
         setdx((yyvsp[0].NUM) + preVar_cnt);
         gen(ini, 0, total_var + 3);
@@ -1691,35 +1692,35 @@ yyreduce:
         }
         
     }
-#line 1695 "yacc.c"
+#line 1696 "yacc.c"
     break;
 
   case 19:
-#line 142 "pl0.y"
+#line 143 "pl0.y"
     {
         gen(opr, preVar_cnt, 0);
         preVar_cnt = (yyvsp[-2].NUM) + preVar_cnt;
     }
-#line 1704 "yacc.c"
+#line 1705 "yacc.c"
     break;
 
   case 20:
-#line 150 "pl0.y"
+#line 151 "pl0.y"
     {
         printf("total_var: %d\n",total_var);
         (yyval.NUM) = (yyvsp[0].NUM);
     }
-#line 1713 "yacc.c"
+#line 1714 "yacc.c"
     break;
 
   case 21:
-#line 154 "pl0.y"
+#line 155 "pl0.y"
      {(yyval.NUM) = 0 ;}
-#line 1719 "yacc.c"
+#line 1720 "yacc.c"
     break;
 
   case 22:
-#line 158 "pl0.y"
+#line 159 "pl0.y"
      {
          if((yyvsp[-2].NUM) == 1){
          while(varx > 0){
@@ -1734,40 +1735,40 @@ yyreduce:
              }
          }
      }
-#line 1738 "yacc.c"
+#line 1739 "yacc.c"
     break;
 
   case 23:
-#line 173 "pl0.y"
+#line 174 "pl0.y"
     {
         printf("2: %d, 5: %d\n", (yyvsp[-3].NUM), (yyvsp[0].NUM));
         (yyval.NUM) = (yyvsp[-3].NUM) + (yyvsp[0].NUM);
     }
-#line 1747 "yacc.c"
+#line 1748 "yacc.c"
     break;
 
   case 24:
-#line 177 "pl0.y"
+#line 178 "pl0.y"
       {(yyval.NUM) = 0;}
-#line 1753 "yacc.c"
+#line 1754 "yacc.c"
     break;
 
   case 25:
-#line 181 "pl0.y"
+#line 182 "pl0.y"
     { 
         (yyval.NUM) = (yyvsp[0].NUM);
     }
-#line 1761 "yacc.c"
+#line 1762 "yacc.c"
     break;
 
   case 26:
-#line 184 "pl0.y"
+#line 185 "pl0.y"
                            {(yyval.NUM) = (yyvsp[-2].NUM) + (yyvsp[0].NUM);}
-#line 1767 "yacc.c"
+#line 1768 "yacc.c"
     break;
 
   case 27:
-#line 188 "pl0.y"
+#line 189 "pl0.y"
     {
         ++total_var;
         strcpy(id, (yyvsp[0].VAR));
@@ -1776,11 +1777,11 @@ yyreduce:
         vartable[varx] = tx;
         ++varx;
     }
-#line 1780 "yacc.c"
+#line 1781 "yacc.c"
     break;
 
   case 28:
-#line 197 "pl0.y"
+#line 198 "pl0.y"
     {
         total_var += (yyvsp[-1].NUM);
         strcpy(id, (yyvsp[-3].VAR));
@@ -1790,43 +1791,43 @@ yyreduce:
         vartable[varx] = tx;
         ++varx;
     }
-#line 1794 "yacc.c"
+#line 1795 "yacc.c"
     break;
 
   case 33:
-#line 217 "pl0.y"
+#line 218 "pl0.y"
     {
         strcpy(id, (yyvsp[-2].VAR));
         c_num = (yyvsp[0].NUM);
         _enter(constant, 0);
     }
-#line 1804 "yacc.c"
+#line 1805 "yacc.c"
     break;
 
   case 34:
-#line 226 "pl0.y"
+#line 227 "pl0.y"
     {
         isString = 0;
         (yyval.NUM) = position((yyvsp[0].VAR));
         if(table[(yyval.NUM)].t == xchar && table[(yyval.NUM)].is_arry) isString = 1;
 
     }
-#line 1815 "yacc.c"
+#line 1816 "yacc.c"
     break;
 
   case 35:
-#line 233 "pl0.y"
+#line 234 "pl0.y"
     {
         isString = 0;
         (yyval.NUM) = position((yyvsp[-3].VAR));
         gen(lit, 0, table[(yyval.NUM)].adr);
         gen(lit, 0, lev - table[(yyval.NUM)].level);
     }
-#line 1826 "yacc.c"
+#line 1827 "yacc.c"
     break;
 
   case 49:
-#line 260 "pl0.y"
+#line 261 "pl0.y"
     {
         while(forx > for_var)
         {
@@ -1839,29 +1840,29 @@ yyreduce:
             }
         }
     }
-#line 1843 "yacc.c"
+#line 1844 "yacc.c"
     break;
 
   case 50:
-#line 275 "pl0.y"
+#line 276 "pl0.y"
     {
         if(table[proc_p].t == xvoid) yyerror("error void cannot return\n");
     }
-#line 1851 "yacc.c"
+#line 1852 "yacc.c"
     break;
 
   case 51:
-#line 280 "pl0.y"
+#line 281 "pl0.y"
     {
         gen(sto, -1, 0);
         gen(opr, preVar_cnt, 0);
         --px;
     }
-#line 1861 "yacc.c"
+#line 1862 "yacc.c"
     break;
 
   case 54:
-#line 291 "pl0.y"
+#line 292 "pl0.y"
     {
         /*
         if($1 == 0){
@@ -1888,11 +1889,11 @@ yyreduce:
             }
         }
     }
-#line 1892 "yacc.c"
+#line 1893 "yacc.c"
     break;
 
   case 55:
-#line 318 "pl0.y"
+#line 319 "pl0.y"
     {
         strcpy(temstr, (yyvsp[0].VAR));
         printf("-----------qweqwcasdasdasd---------------: %c  \n", temstr[0]);
@@ -1915,106 +1916,111 @@ yyreduce:
             ++forx;
         }
     }
-#line 1919 "yacc.c"
+#line 1920 "yacc.c"
     break;
 
   case 58:
-#line 347 "pl0.y"
+#line 348 "pl0.y"
     {
         gen(jpc, 0, 0);
     }
-#line 1927 "yacc.c"
+#line 1928 "yacc.c"
     break;
 
   case 59:
-#line 351 "pl0.y"
+#line 352 "pl0.y"
     {
         for_var += (yyvsp[0].NUM);
         for_lev[for_lx] = (yyvsp[0].NUM);
         ++for_lx;
     }
-#line 1937 "yacc.c"
+#line 1938 "yacc.c"
     break;
 
   case 60:
-#line 357 "pl0.y"
+#line 358 "pl0.y"
     {
         for_var -= for_lev[--for_lx];
     }
-#line 1945 "yacc.c"
+#line 1946 "yacc.c"
     break;
 
   case 61:
-#line 361 "pl0.y"
+#line 362 "pl0.y"
     {
         gen(jmp, 0, (yyvsp[-10].NUM));
         printf("jpc = %d\n", (yyvsp[-8].NUM));
         code[(yyvsp[-8].NUM)].a = cx;
     }
-#line 1955 "yacc.c"
+#line 1956 "yacc.c"
     break;
 
   case 64:
-#line 371 "pl0.y"
+#line 372 "pl0.y"
                 { (yyval.NUM) = 1; }
-#line 1961 "yacc.c"
+#line 1962 "yacc.c"
     break;
 
   case 65:
-#line 372 "pl0.y"
+#line 373 "pl0.y"
                             {(yyval.NUM) = 1 + (yyvsp[0].NUM);}
-#line 1967 "yacc.c"
+#line 1968 "yacc.c"
     break;
 
   case 66:
-#line 375 "pl0.y"
+#line 376 "pl0.y"
     {
         gen(jpc,0,0);
     }
-#line 1975 "yacc.c"
+#line 1976 "yacc.c"
     break;
 
   case 67:
-#line 379 "pl0.y"
+#line 380 "pl0.y"
     {
         gen(jmp, 0, 0);
         code[(yyvsp[-3].NUM)].a = cx;
     }
-#line 1984 "yacc.c"
+#line 1985 "yacc.c"
     break;
 
   case 68:
-#line 384 "pl0.y"
+#line 385 "pl0.y"
     {
         code[(yyvsp[-2].NUM)].a = cx;
     }
-#line 1992 "yacc.c"
+#line 1993 "yacc.c"
     break;
 
   case 71:
-#line 392 "pl0.y"
+#line 393 "pl0.y"
     {
         gen(jpc, 0, 0);
     }
-#line 2000 "yacc.c"
+#line 2001 "yacc.c"
     break;
 
   case 72:
-#line 396 "pl0.y"
+#line 397 "pl0.y"
     {
         gen(jmp, 0, (yyvsp[-5].NUM));
         printf("now cx: %d----------------------------------------", cx);
        code[(yyvsp[-2].NUM)].a = cx;
     }
-#line 2010 "yacc.c"
+#line 2011 "yacc.c"
     break;
 
   case 73:
-#line 403 "pl0.y"
+#line 404 "pl0.y"
     {
         if(table[(yyvsp[-1].NUM)].is_arry == 0){
+            if(table[(yyvsp[-1].NUM)].t == xchar){
+                gen(opr, -1, 16);
+                gen(sto, lev - table[(yyvsp[-1].NUM)].level, table[(yyvsp[-1].NUM)].adr);
+            }else{
             gen(opr, 0, 16);
             gen(sto, lev - table[(yyvsp[-1].NUM)].level, table[(yyvsp[-1].NUM)].adr);
+            }
         }else {
             if(isString == 0) {
                 gen(opr, 0, 16);
@@ -2033,11 +2039,11 @@ yyreduce:
             }
         }
     }
-#line 2037 "yacc.c"
+#line 2043 "yacc.c"
     break;
 
   case 74:
-#line 427 "pl0.y"
+#line 433 "pl0.y"
     {
         if(table[(yyvsp[-1].NUM)].is_arry == 0 && table[(yyvsp[-1].NUM)].t != xchar){
             gen(lod, lev - table[(yyvsp[-1].NUM)].level,table[(yyvsp[-1].NUM)].adr);
@@ -2050,6 +2056,7 @@ yyreduce:
         }
         else{
             if(isString == 0 && table[(yyvsp[-1].NUM)].t == xchar){
+                printf("asdfhoasdgjlasdkjglasdjfl");
                 gen(lod, 0, 0);
                 gen(opr, -1, 14);   
                 gen(opr, 0, 15);
@@ -2065,116 +2072,116 @@ yyreduce:
             }
         }
     }
-#line 2069 "yacc.c"
+#line 2076 "yacc.c"
     break;
 
   case 75:
-#line 455 "pl0.y"
+#line 462 "pl0.y"
     {
         gen(opr, 0, 14);
         gen(opr, 0, 15);
     }
-#line 2078 "yacc.c"
+#line 2085 "yacc.c"
     break;
 
   case 76:
-#line 462 "pl0.y"
+#line 469 "pl0.y"
             {
                 gen(opr, 0, 8);
             }
-#line 2086 "yacc.c"
+#line 2093 "yacc.c"
     break;
 
   case 77:
-#line 466 "pl0.y"
+#line 473 "pl0.y"
             {
                 gen(opr, 0, 9);
             }
-#line 2094 "yacc.c"
+#line 2101 "yacc.c"
     break;
 
   case 78:
-#line 470 "pl0.y"
+#line 477 "pl0.y"
             {
                 gen(opr, 0, 10);
             }
-#line 2102 "yacc.c"
+#line 2109 "yacc.c"
     break;
 
   case 79:
-#line 474 "pl0.y"
+#line 481 "pl0.y"
             {
                 gen(opr, 0, 13);
             }
-#line 2110 "yacc.c"
+#line 2117 "yacc.c"
     break;
 
   case 80:
-#line 478 "pl0.y"
+#line 485 "pl0.y"
             {
                 gen(opr, 0, 12);
             }
-#line 2118 "yacc.c"
+#line 2125 "yacc.c"
     break;
 
   case 81:
-#line 482 "pl0.y"
+#line 489 "pl0.y"
             {
                 gen(opr, 0, 11);
             }
-#line 2126 "yacc.c"
+#line 2133 "yacc.c"
     break;
 
   case 84:
-#line 490 "pl0.y"
+#line 497 "pl0.y"
     {
         gen(opr, 0, 1);
     }
-#line 2134 "yacc.c"
+#line 2141 "yacc.c"
     break;
 
   case 86:
-#line 495 "pl0.y"
+#line 502 "pl0.y"
     {
         gen(opr, 0, 2);
     }
-#line 2142 "yacc.c"
+#line 2149 "yacc.c"
     break;
 
   case 87:
-#line 499 "pl0.y"
+#line 506 "pl0.y"
     {
         gen(opr, 0, 3);
     }
-#line 2150 "yacc.c"
+#line 2157 "yacc.c"
     break;
 
   case 89:
-#line 505 "pl0.y"
+#line 512 "pl0.y"
     {
         gen(opr, 0, 4);
     }
-#line 2158 "yacc.c"
+#line 2165 "yacc.c"
     break;
 
   case 90:
-#line 509 "pl0.y"
+#line 516 "pl0.y"
     {
         gen(opr, 0 , 5);
     }
-#line 2166 "yacc.c"
+#line 2173 "yacc.c"
     break;
 
   case 91:
-#line 513 "pl0.y"
+#line 520 "pl0.y"
         {
             gen(opr, 0, 17);
         }
-#line 2174 "yacc.c"
+#line 2181 "yacc.c"
     break;
 
   case 92:
-#line 518 "pl0.y"
+#line 525 "pl0.y"
     {
         if((yyvsp[0].NUM) == 0) yyerror("Symbol not found \n");
         else{
@@ -2193,28 +2200,28 @@ yyreduce:
             }
         }
     }
-#line 2197 "yacc.c"
+#line 2204 "yacc.c"
     break;
 
   case 93:
-#line 537 "pl0.y"
+#line 544 "pl0.y"
     {
         gen(lit, 0, (yyvsp[0].NUM));
     }
-#line 2205 "yacc.c"
+#line 2212 "yacc.c"
     break;
 
   case 96:
-#line 545 "pl0.y"
+#line 552 "pl0.y"
     {
         ++px;
         proctable[px] = (yyvsp[0].NUM);
     }
-#line 2214 "yacc.c"
+#line 2221 "yacc.c"
     break;
 
   case 97:
-#line 550 "pl0.y"
+#line 557 "pl0.y"
     {
         if(table[(yyvsp[-4].NUM)].kind != procedure) yyerror("Is  not a procedure \n");
         else{
@@ -2223,53 +2230,53 @@ yyreduce:
             if(table[(yyvsp[-4].NUM)].t != xvoid) gen(lod, -1, 0); /* get return */
         }
     }
-#line 2227 "yacc.c"
+#line 2234 "yacc.c"
     break;
 
   case 98:
-#line 560 "pl0.y"
+#line 567 "pl0.y"
                     {(yyval.NUM) = 1;}
-#line 2233 "yacc.c"
+#line 2240 "yacc.c"
     break;
 
   case 99:
-#line 562 "pl0.y"
+#line 569 "pl0.y"
         {(yyval.NUM) = 1 + (yyvsp[0].NUM);}
-#line 2239 "yacc.c"
+#line 2246 "yacc.c"
     break;
 
   case 100:
-#line 563 "pl0.y"
+#line 570 "pl0.y"
       {(yyval.NUM) = 0;}
-#line 2245 "yacc.c"
+#line 2252 "yacc.c"
     break;
 
   case 101:
-#line 567 "pl0.y"
+#line 574 "pl0.y"
     {
         (yyval.NUM) = tx;
     }
-#line 2253 "yacc.c"
+#line 2260 "yacc.c"
     break;
 
   case 102:
-#line 572 "pl0.y"
+#line 579 "pl0.y"
     {
         (yyval.NUM) = cx;
     }
-#line 2261 "yacc.c"
+#line 2268 "yacc.c"
     break;
 
   case 104:
-#line 578 "pl0.y"
+#line 585 "pl0.y"
     {
         yyerror("miss a SEMICOM");
     }
-#line 2269 "yacc.c"
+#line 2276 "yacc.c"
     break;
 
 
-#line 2273 "yacc.c"
+#line 2280 "yacc.c"
 
       default: break;
     }
@@ -2501,7 +2508,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 581 "pl0.y"
+#line 588 "pl0.y"
 
 
 void yyerror(const char* s){
@@ -2730,7 +2737,7 @@ void interpret()
                                 buffer[i.l - ii - 1] = s[t];
                                 t = t - 1;
                             }
-                            printf("here output %s", buffer);
+                            printf("here output %s\n", buffer);
                         }else if(i.l == -1){
                             
                             char c = s[t];
@@ -2749,6 +2756,10 @@ void interpret()
                             /* fprintf(fresult, "?"); */
                             scanf("%d", &(s[t]));
                             /* fprintf(fresult, "%d\n", s[t]); */						
+                        }else if(i.l < 0){
+                            t = t + 1;
+                            printf("?");
+                            scanf("%c", &(s[t]));
                         }else{
                             printf("? (need a string)");
                             scanf("%s", buffer);
@@ -2759,6 +2770,7 @@ void interpret()
                                 s[t] = buffer[cnt_i];
                             }
                         }
+                        getchar();
                         break;
                     case 17:
                         t = t - 1;
@@ -2847,6 +2859,7 @@ int main(){
     line = 0;
     printf("Input file        ");
     scanf("%s", fname);
+    getchar();
     if((fin = fopen(fname, "r")) == NULL)
     {
         printf("open file error!\n");
