@@ -1,5 +1,4 @@
-    1 proc  main lev=0 addr=1 size=3
+    1 proc  main lev=0 addr=1 size=2
     2 var   a lev=0 addr=3
-    3 var   b lev=0 addr=15
-    4 var   c lev=0 addr=16
+    3 var   b lev=0 addr=4
 

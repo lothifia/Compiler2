@@ -75,6 +75,7 @@ int val;            /* 数值，仅const使用 */
     int size;           /* 需要分配的数据区空间, 仅procedure使用 */
 enum type t; /* type */
 int is_arry;
+int idx_cnt;
 int parameter_cnt;
 };
 struct tablestruct table[txmax]; /* 符号表 */

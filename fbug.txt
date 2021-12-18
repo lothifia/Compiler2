@@ -1,0 +1,2 @@
+error!:miss a SEMICOM , located at 3 line
+error!:syntax error, unexpected SEMI_t , located at 3 line

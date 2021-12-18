@@ -28,6 +28,8 @@
     void redirectInput(FILE *input);
                         char get_void;
 %}
+%define parse.error verbose /* verbose yyerror messages */
+
 %union{
     int NUM;
     char* VAR;
@@ -39,7 +41,7 @@
 %token<OP> Plus Div Minus Mul EQL GEQ LEQ LSS GTR NEQ
 %token END LB RB LP RP MAIN SEMI_t COMMA CONST PROC IF ELSE READ WRITE FOR WHILE LMB RMB RETURN PP DD RED
 %type<NUM> get_table_addr get_code_addr declaration_list VarInit Vardecl Vardef 
-%type<NUM> block var_p var_t prevardecl prevardef pass_factor for_3
+%type<NUM> block var_p var_t prevardecl prevardef pass_factor for_3 arry_n
 %type statement VarInit Vardef condition STRING defunc
 
 %%
@@ -64,7 +66,7 @@ procstart:
     } get_table_addr
     LB block RB
     {
-        table[$6].size =  preVar_cnt;
+        table[$6].size =  total_var;
     }
     ;
 
@@ -94,7 +96,7 @@ defunc:
     }
     LB block RB 
     {
-        table[$4].size = preVar_cnt;
+        table[$4].size = total_var;
         preVar_cnt = 0;
         total_var = 0;
         proc_p = 0;
@@ -118,16 +120,23 @@ prevardef: var_t var
         total_var ++;
         $$ = 1;
     }
-    | var_t var LMB num RMB
+    | var_t var arry_n
     {
         $$ = 1;
         strcpy(id, $2);
-        _enter(variable, $4);
+        _enter(variable, $3);
         if($1 == 1) table[tx].t = xint;
         else if($1 == 2) table[tx].t = xchar;
-        total_var += $4;
+        total_var += $3;
         $$ = 1;
     }
+    ;
+arry_n:
+    arry_n LMB num RMB 
+    {
+        $$ = $1 + $3;
+    }
+    | {$$ = 0;}
     ;
 block:
     declaration_list
@@ -251,6 +260,7 @@ statement:
     |   writestm
     |   forstm
     |   returnstm
+    |   error SEMI
     ;
 asgnstm_semi: asgnstm_tot get_sto SEMI;
 
@@ -585,6 +595,7 @@ SEMI: SEMI_t get_sto
     {
         yyerror("miss a SEMICOM");
     }
+    ;
 %%
 
 void yyerror(const char* s){
